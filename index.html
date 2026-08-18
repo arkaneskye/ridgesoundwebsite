@@ -1,1 +1,1119 @@
-<h1>Website coming soon</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Ridge Sound — The World's Least Possible Plugins</title>
+<meta name="description" content="Ridge Sound builds the world's least possible audio plugins. Fold EQ, Frequency Flipper, and more." />
+<meta name="theme-color" content="#05070b" />
+
+<meta property="og:title" content="Ridge Sound — The World's Least Possible Plugins" />
+<meta property="og:description" content="Fold into unspeakable dimensions." />
+<meta property="og:type" content="website" />
+
+<link rel="preload" href="assets/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin />
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 264 264'%3E%3Cpath d='M50.2 158.2C58.8 117.3 143.2 158.2 143.2 158.2C143.2 158.2 119.7 119.2 87.2 105.5C61 94.5 6.2 105.5 6.2 105.5L87.2 3.6L258.2 158.2L241.2 258.5H150.2C150.2 258.5 43.3 191.3 50.2 158.2Z' fill='none' stroke='%237fe3ff' stroke-width='14'/%3E%3C/svg%3E" />
+
+<style>
+/* self-hosted so the site has zero third-party dependencies */
+@font-face{
+  font-family:'Inter';
+  font-style:normal;
+  font-weight:100 900;
+  font-display:swap;
+  src:url(assets/fonts/inter-var.woff2) format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+
+/* ============================================================
+   RIDGE SOUND — design tokens
+   Palette lifted from FoldEQ / Bloodwood / Partial Heat sources
+   ============================================================ */
+:root{
+  --bg-0:#05070b;
+  --bg-1:#0a0e14;
+  --bg-2:#0e141c;
+  --bg-3:#131a24;
+  --bg-4:#1c2733;
+
+  --line:rgba(126,160,196,.14);
+  --line-hot:rgba(63,169,245,.38);
+
+  --txt:#c8d6e5;
+  --txt-hi:#e8f6ff;
+  --txt-dim:#6b7a8c;
+
+  --cyan:#3fa9f5;
+  --ice:#7fe3ff;
+  --warm:#ffb46b;
+  --sand:#e9d6c3;
+
+  --nav-h:68px;
+  --pad:clamp(20px, 5vw, 64px);
+  --maxw:1240px;
+
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--bg-0);
+  color:var(--txt);
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  font-weight:300;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  overflow-x:hidden;
+}
+img,svg,video{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+::selection{background:rgba(63,169,245,.28);color:var(--txt-hi)}
+
+/* ---------- WebGL canvas ---------- */
+#gl{
+  position:fixed; inset:0; z-index:0;
+  width:100%; height:100%;
+  display:block;
+  pointer-events:none;
+}
+/* graceful fallback if WebGL is unavailable */
+.nofx #gl{display:none}
+.nofx body{
+  background:
+    radial-gradient(120% 80% at 50% 0%, #16283a 0%, #0a1119 45%, #05070b 100%);
+}
+
+.page{position:relative;z-index:1}
+
+/* ============================ NAV ============================ */
+.nav{
+  position:fixed; top:0; left:0; right:0; z-index:50;
+  height:var(--nav-h);
+  display:flex; align-items:center; gap:24px;
+  padding:0 var(--pad);
+  background:linear-gradient(180deg, rgba(5,7,11,.82) 0%, rgba(5,7,11,.55) 60%, rgba(5,7,11,0) 100%);
+  backdrop-filter:blur(14px) saturate(120%);
+  -webkit-backdrop-filter:blur(14px) saturate(120%);
+  border-bottom:1px solid transparent;
+  transition:background .4s var(--ease), border-color .4s var(--ease);
+}
+.nav.stuck{
+  background:rgba(8,11,16,.86);
+  border-bottom-color:var(--line);
+}
+
+.brand{display:flex;align-items:center;gap:12px;flex:0 0 auto}
+.brand .mark{
+  width:26px;height:26px;
+  color:var(--txt-hi);
+  filter:drop-shadow(0 0 7px rgba(63,169,245,.55));
+  transition:transform .5s var(--ease), filter .5s var(--ease);
+}
+.brand:hover .mark{transform:translateY(-2px) scale(1.04);filter:drop-shadow(0 0 12px rgba(127,227,255,.85))}
+.brand-text{
+  font-size:14px; font-weight:400; letter-spacing:.34em;
+  color:var(--txt-hi); white-space:nowrap;
+  text-indent:.34em;
+}
+
+.links{display:flex;align-items:center;gap:34px;margin-left:auto}
+.links a{
+  position:relative;
+  font-size:11.5px; font-weight:400; letter-spacing:.22em;
+  color:var(--txt-dim);
+  padding:6px 0;
+  transition:color .3s var(--ease);
+}
+.links a::after{
+  content:''; position:absolute; left:0; right:100%; bottom:0; height:1px;
+  background:linear-gradient(90deg,var(--cyan),var(--ice));
+  transition:right .4s var(--ease);
+}
+.links a:hover{color:var(--txt-hi)}
+.links a:hover::after{right:0}
+
+.account{position:relative;flex:0 0 auto;margin-left:34px}
+.acct-btn{
+  display:flex;align-items:center;gap:9px;
+  font-size:11.5px;letter-spacing:.2em;color:var(--txt);
+  padding:9px 17px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:rgba(19,26,36,.5);
+  transition:border-color .3s var(--ease),color .3s var(--ease),box-shadow .3s var(--ease),background .3s var(--ease);
+}
+.acct-btn:hover,.account.open .acct-btn{
+  color:var(--txt-hi);
+  border-color:var(--line-hot);
+  background:rgba(28,39,51,.65);
+  box-shadow:0 0 22px rgba(63,169,245,.16);
+}
+.acct-btn svg{width:13px;height:13px;opacity:.75}
+
+.acct-menu{
+  position:absolute; top:calc(100% + 12px); right:0;
+  min-width:172px;
+  padding:7px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:rgba(10,14,20,.95);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  box-shadow:0 22px 50px rgba(0,0,0,.6), 0 0 0 1px rgba(63,169,245,.05) inset;
+  opacity:0; visibility:hidden; transform:translateY(-7px);
+  transition:opacity .28s var(--ease),transform .28s var(--ease),visibility .28s;
+}
+.account.open .acct-menu{opacity:1;visibility:visible;transform:translateY(0)}
+.acct-menu a{
+  display:block; padding:10px 13px; border-radius:8px;
+  font-size:12.5px; letter-spacing:.06em; color:var(--txt-dim);
+  transition:background .2s var(--ease),color .2s var(--ease);
+}
+.acct-menu a:hover{background:rgba(63,169,245,.1);color:var(--txt-hi)}
+.acct-menu .sep{height:1px;margin:5px 9px;background:var(--line)}
+
+/* ============================ HERO ============================ */
+.hero{
+  position:relative;
+  min-height:100vh;
+  min-height:100svh;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  text-align:center;
+  padding:calc(var(--nav-h) + 40px) var(--pad) 96px;
+}
+/* scrim keeps the metal from eating the type */
+.hero::before{
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:
+    radial-gradient(56% 42% at 50% 47%, rgba(5,7,11,.62) 0%, rgba(5,7,11,.34) 45%, rgba(5,7,11,0) 78%),
+    linear-gradient(180deg, rgba(5,7,11,.55) 0%, rgba(5,7,11,0) 22%, rgba(5,7,11,0) 62%, var(--bg-0) 100%);
+}
+.hero > *{position:relative}
+
+.eyebrow{
+  font-size:10.5px; letter-spacing:.44em; text-indent:.44em;
+  color:var(--txt-dim);
+  margin:0 0 30px;
+  opacity:0; transform:translateY(12px);
+  animation:rise 1s var(--ease) .25s forwards;
+}
+h1.headline{
+  margin:0;
+  font-size:clamp(2.15rem, 7.4vw, 6.1rem);
+  font-weight:200;
+  line-height:1.03;
+  letter-spacing:.015em;
+  text-transform:uppercase;
+  color:var(--txt-hi);
+  max-width:16ch;
+  text-shadow:0 0 42px rgba(5,7,11,.85), 0 0 100px rgba(5,7,11,.7);
+}
+h1.headline .w{
+  display:inline-block;
+  opacity:0; transform:translateY(26px);
+  animation:rise 1.15s var(--ease) forwards;
+}
+h1.headline .glow{
+  color:transparent;
+  background:linear-gradient(180deg,#ffffff 0%,var(--txt-hi) 42%,#9fc4e0 100%);
+  -webkit-background-clip:text; background-clip:text;
+}
+@keyframes rise{to{opacity:1;transform:translateY(0)}}
+
+.sub{
+  margin:26px 0 0;
+  font-size:clamp(.86rem,1.5vw,1.02rem);
+  font-weight:300; letter-spacing:.13em;
+  color:var(--txt-dim);
+  opacity:0;transform:translateY(14px);
+  animation:rise 1s var(--ease) .95s forwards;
+}
+
+.cta-wrap{
+  margin-top:46px;
+  opacity:0;transform:translateY(16px);
+  animation:rise 1s var(--ease) 1.12s forwards;
+}
+
+/* ---------- buttons ---------- */
+.btn{
+  position:relative; overflow:hidden;
+  display:inline-flex; align-items:center; justify-content:center; gap:11px;
+  padding:16px 38px;
+  border-radius:999px;
+  font-size:12px; font-weight:400; letter-spacing:.24em; text-indent:.24em;
+  text-transform:uppercase;
+  border:1px solid var(--line-hot);
+  color:var(--txt-hi);
+  background:linear-gradient(180deg, rgba(63,169,245,.16) 0%, rgba(63,169,245,.05) 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07);
+  transition:transform .35s var(--ease), box-shadow .45s var(--ease), border-color .35s var(--ease), background .35s var(--ease);
+  -webkit-tap-highlight-color:transparent;
+}
+.btn::after{ /* shimmer sweep */
+  content:''; position:absolute; top:0; bottom:0; width:38%;
+  left:-60%;
+  background:linear-gradient(100deg, transparent, rgba(199,236,255,.24), transparent);
+  transform:skewX(-18deg);
+  transition:left .75s var(--ease);
+}
+.btn:hover{
+  transform:translateY(-2px);
+  border-color:rgba(127,227,255,.72);
+  background:linear-gradient(180deg, rgba(63,169,245,.28) 0%, rgba(63,169,245,.09) 100%);
+  box-shadow:0 12px 40px rgba(63,169,245,.24), inset 0 1px 0 rgba(255,255,255,.13);
+}
+.btn:hover::after{left:120%}
+.btn:active{transform:translateY(0)}
+
+.btn-lg{padding:19px 50px;font-size:13px}
+
+.btn-ghost{
+  border-color:var(--line);
+  background:rgba(19,26,36,.4);
+  color:var(--txt);
+}
+.btn-ghost:hover{
+  border-color:var(--line-hot);
+  background:rgba(28,39,51,.55);
+  box-shadow:0 10px 32px rgba(0,0,0,.4);
+  color:var(--txt-hi);
+}
+
+.btn-warm{
+  border-color:rgba(255,180,107,.45);
+  color:#ffdcb6;
+  background:linear-gradient(180deg, rgba(255,180,107,.18) 0%, rgba(255,180,107,.05) 100%);
+}
+.btn-warm:hover{
+  border-color:rgba(255,201,180,.8);
+  background:linear-gradient(180deg, rgba(255,180,107,.3) 0%, rgba(255,180,107,.09) 100%);
+  box-shadow:0 12px 40px rgba(255,180,107,.2), inset 0 1px 0 rgba(255,255,255,.14);
+}
+
+/* scroll hint */
+.scroll-hint{
+  position:absolute; left:50%; bottom:30px; transform:translateX(-50%);
+  display:flex; flex-direction:column; align-items:center; gap:11px;
+  font-size:9.5px; letter-spacing:.35em; text-indent:.35em; color:var(--txt-dim);
+  opacity:0; animation:rise 1s var(--ease) 1.6s forwards;
+}
+.scroll-hint .rail{
+  width:1px;height:46px;
+  background:linear-gradient(180deg, rgba(126,160,196,.42), transparent);
+  position:relative;overflow:hidden;
+}
+.scroll-hint .rail::after{
+  content:'';position:absolute;left:0;width:1px;height:16px;
+  background:linear-gradient(180deg,var(--ice),transparent);
+  animation:railrun 2.4s ease-in-out infinite;
+}
+@keyframes railrun{0%{top:-16px}70%,100%{top:46px}}
+
+/* ============================ SECTIONS ============================ */
+.section{
+  position:relative;
+  padding:clamp(80px,11vw,150px) var(--pad);
+  max-width:var(--maxw);
+  margin:0 auto;
+}
+.sec-head{
+  display:flex; align-items:baseline; gap:20px;
+  margin-bottom:clamp(48px,7vw,84px);
+}
+.sec-head h2{
+  margin:0;
+  font-size:clamp(1.05rem,2vw,1.35rem);
+  font-weight:300; letter-spacing:.34em; text-indent:.34em;
+  text-transform:uppercase; color:var(--txt-hi);
+  white-space:nowrap;
+}
+.sec-head .rule{
+  flex:1; height:1px;
+  background:linear-gradient(90deg, var(--line-hot), var(--line) 30%, transparent);
+}
+.sec-head .count{font-size:11px;letter-spacing:.2em;color:var(--txt-dim)}
+
+/* ---------- plugin rows ---------- */
+.plugin{
+  display:grid;
+  grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);
+  gap:clamp(34px,5vw,72px);
+  align-items:center;
+  padding:clamp(30px,4vw,52px) 0;
+}
+.plugin + .plugin{
+  border-top:1px solid var(--line);
+  margin-top:clamp(24px,4vw,50px);
+}
+.plugin.flip{grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr)}
+.plugin.flip .media{order:2}
+.plugin.flip .copy{order:1}
+
+.media{
+  position:relative;
+  border-radius:16px;
+  overflow:hidden;
+  border:1px solid var(--line);
+  background:linear-gradient(180deg,var(--bg-2),var(--bg-1));
+  box-shadow:
+    0 34px 80px rgba(0,0,0,.62),
+    0 0 0 1px rgba(63,169,245,.05) inset,
+    0 1px 0 rgba(255,255,255,.05) inset;
+  transition:transform .7s var(--ease), box-shadow .7s var(--ease), border-color .7s var(--ease);
+}
+.media::after{ /* glass sheen */
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(160deg, rgba(255,255,255,.07) 0%, transparent 34%);
+}
+.media:hover{
+  transform:translateY(-6px);
+  border-color:var(--line-hot);
+  box-shadow:0 44px 100px rgba(0,0,0,.7), 0 0 60px rgba(63,169,245,.13);
+}
+.media video,.media img{width:100%;height:auto;display:block}
+
+/* corner ribbon */
+.ribbon{
+  position:absolute; top:0; left:0; width:132px; height:132px;
+  overflow:hidden; pointer-events:none; z-index:3;
+}
+.ribbon span{
+  position:absolute;
+  top:30px; left:-40px;
+  width:180px;
+  transform:rotate(-45deg);
+  text-align:center;
+  padding:7px 0;
+  font-size:11px; font-weight:500; letter-spacing:.24em; text-indent:.24em;
+  color:#20100c;
+  background:linear-gradient(180deg,#ffc9b4 0%,var(--warm) 48%,#e39a55 100%);
+  box-shadow:0 6px 20px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.5);
+}
+.ribbon span::before,.ribbon span::after{
+  content:'';position:absolute;bottom:-5px;border-style:solid;
+  border-color:#96755f transparent transparent transparent;
+  border-width:5px 5px 0 0;
+}
+.ribbon span::before{left:34px}
+.ribbon span::after{right:34px;border-width:5px 0 0 5px}
+
+.copy .kicker{
+  font-size:10px; letter-spacing:.4em; text-indent:.4em;
+  color:var(--txt-dim); margin:0 0 16px;
+}
+.copy h3{
+  margin:0;
+  font-size:clamp(1.85rem,4.2vw,3.1rem);
+  font-weight:200; letter-spacing:.055em;
+  text-transform:uppercase;
+  color:var(--txt-hi);
+  line-height:1.06;
+}
+.copy .tag{
+  margin:20px 0 0;
+  font-size:clamp(1rem,1.7vw,1.16rem);
+  font-weight:300; letter-spacing:.02em;
+  color:var(--txt);
+}
+.copy .tag2{
+  margin:9px 0 0;
+  font-size:.95rem; font-weight:300; letter-spacing:.03em;
+  color:var(--txt-dim);
+  font-style:italic;
+}
+.copy .price{
+  margin:24px 0 0;
+  font-size:12px;letter-spacing:.22em;color:var(--txt-dim);
+}
+.copy .price .free{color:var(--warm);font-weight:500}
+.actions{display:flex;flex-wrap:wrap;gap:13px;margin-top:32px}
+.actions .btn{padding:14px 30px;font-size:11px}
+
+/* ---------- reveal ---------- */
+.rv{opacity:0;transform:translateY(34px);transition:opacity 1s var(--ease),transform 1s var(--ease)}
+.rv.in{opacity:1;transform:none}
+.rv.d1{transition-delay:.1s}
+.rv.d2{transition-delay:.2s}
+
+/* ============================ FOOTER ============================ */
+.foot{
+  position:relative;
+  border-top:1px solid var(--line);
+  background:linear-gradient(180deg, rgba(10,14,20,.4), rgba(5,7,11,.92));
+  padding:clamp(60px,8vw,96px) var(--pad) 40px;
+}
+.foot-in{
+  max-width:var(--maxw);margin:0 auto;
+  display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:48px;
+}
+.foot h4{
+  margin:0 0 18px;
+  font-size:10px;letter-spacing:.34em;text-indent:.34em;
+  color:var(--txt-dim);text-transform:uppercase;font-weight:400;
+}
+.foot p{margin:0 0 12px;font-size:13.5px;line-height:1.75;color:var(--txt-dim);max-width:34ch}
+.foot a.lnk{color:var(--txt);transition:color .3s var(--ease)}
+.foot a.lnk:hover{color:var(--ice)}
+.foot ul{list-style:none;margin:0;padding:0}
+.foot li{margin-bottom:11px;font-size:13.5px}
+.foot li a{color:var(--txt-dim);transition:color .3s var(--ease)}
+.foot li a:hover{color:var(--txt-hi)}
+.soon{font-size:10px;letter-spacing:.16em;color:var(--txt-dim);opacity:.6;margin-left:8px}
+.foot-brand{display:flex;align-items:center;gap:11px;margin-bottom:20px}
+.foot-brand .mark{width:22px;height:22px;color:var(--txt)}
+.foot-brand span{font-size:12px;letter-spacing:.32em;color:var(--txt-hi)}
+.foot-bot{
+  max-width:var(--maxw);margin:56px auto 0;
+  padding-top:26px;border-top:1px solid var(--line);
+  display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
+  font-size:11px;letter-spacing:.14em;color:var(--txt-dim);
+}
+
+/* ============================ RESPONSIVE ============================ */
+@media (max-width:1000px){
+  .links{gap:24px}
+  .links a{font-size:10.5px;letter-spacing:.18em}
+  .plugin,.plugin.flip{grid-template-columns:1fr;gap:32px}
+  .plugin.flip .media{order:1}
+  .plugin.flip .copy{order:2}
+  .foot-in{grid-template-columns:1fr 1fr}
+}
+@media (max-width:720px){
+  :root{--nav-h:60px;--pad:16px}
+  .nav{gap:0}
+  .brand-text{display:none}
+  .links{gap:14px;margin-left:auto}
+  .links a{font-size:9px;letter-spacing:.1em}
+  .account{margin-left:14px}
+  .acct-btn{padding:8px 10px;font-size:10px;letter-spacing:.1em}
+  .acct-btn .lbl{display:none}
+  .acct-btn svg{width:15px;height:15px}
+  h1.headline{max-width:13ch}
+  .actions .btn{flex:1 1 auto}
+  .foot-in{grid-template-columns:1fr;gap:36px}
+  .scroll-hint{display:none}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+  html{scroll-behavior:auto}
+  .rv{opacity:1;transform:none}
+  .eyebrow,.sub,.cta-wrap,.scroll-hint{opacity:1;transform:none}
+  h1.headline .w{opacity:1;transform:none}
+}
+</style>
+</head>
+
+<body id="top">
+
+<canvas id="gl" aria-hidden="true"></canvas>
+
+<!-- reusable logo mark -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="rs-mark" viewBox="-9 -9 282 282">
+    <path d="M50.2123 158.173C58.7762 117.306 143.212 158.173 143.212 158.173C143.212 158.173 119.698 119.165 87.2123 105.529C61.0053 94.5293 6.21234 105.529 6.21234 105.529L87.2123 3.64041L258.212 158.173L241.212 258.529H150.212C150.212 258.529 43.2803 191.253 50.2123 158.173Z"
+          fill="none" stroke="currentColor" stroke-width="11" stroke-linejoin="round"/>
+  </symbol>
+</svg>
+
+<div class="page">
+
+  <!-- ============ NAV ============ -->
+  <header class="nav" id="nav">
+    <a class="brand" href="#top" aria-label="Ridge Sound home">
+      <svg class="mark" aria-hidden="true"><use href="#rs-mark"/></svg>
+      <span class="brand-text">RIDGE SOUND</span>
+    </a>
+
+    <nav class="links" aria-label="Primary">
+      <a href="#plugins">PLUGINS</a>
+      <a href="#docs">DOCUMENTATION</a>
+      <a href="#contact">CONTACT</a>
+    </nav>
+
+    <div class="account" id="account">
+      <button class="acct-btn" id="acctBtn" aria-haspopup="true" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+          <circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c1.2-4 4-6 7.5-6s6.3 2 7.5 6"/>
+        </svg>
+        <span class="lbl">ACCOUNT</span>
+      </button>
+      <div class="acct-menu" role="menu">
+        <a href="#" role="menuitem" data-auth="signin">Sign In</a>
+        <div class="sep"></div>
+        <a href="#" role="menuitem" data-auth="signup">Sign Up</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero" id="hero">
+    <p class="eyebrow">RIDGE SOUND</p>
+    <h1 class="headline" id="headline"></h1>
+    <p class="sub">Audio tools that should not exist. Built anyway.</p>
+    <div class="cta-wrap">
+      <a class="btn btn-lg" href="#plugins">Blow Your Mind</a>
+    </div>
+    <div class="scroll-hint"><span>SCROLL</span><span class="rail"></span></div>
+  </section>
+
+  <!-- ============ PLUGINS ============ -->
+  <section class="section" id="plugins">
+    <div class="sec-head rv">
+      <h2>Plugins</h2>
+      <span class="rule"></span>
+      <span class="count">02</span>
+    </div>
+
+    <!-- Fold EQ -->
+    <article class="plugin">
+      <div class="media rv">
+        <video autoplay loop muted playsinline preload="metadata" poster="assets/foldeq-poster.jpg" aria-label="Fold EQ interface">
+          <source src="assets/foldeq.webm" type="video/webm">
+          <source src="assets/foldeq.mp4" type="video/mp4">
+        </video>
+      </div>
+      <div class="copy rv d1">
+        <p class="kicker">EQUALIZER</p>
+        <h3>Fold EQ</h3>
+        <p class="tag">World's least possible EQ</p>
+        <p class="tag2">Fold into unspeakable dimensions</p>
+        <p class="price">VST3 &middot; AU &middot; WIN / MAC</p>
+        <div class="actions">
+          <a class="btn" href="#" data-buy="foldeq">Buy Now</a>
+          <a class="btn btn-ghost" href="#" data-more="foldeq">See More</a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Frequency Flipper -->
+    <article class="plugin flip">
+      <div class="media rv">
+        <div class="ribbon"><span>FREE!</span></div>
+        <video autoplay loop muted playsinline preload="metadata" poster="assets/flipper-poster.jpg" aria-label="Frequency Flipper interface">
+          <source src="assets/flipper.webm" type="video/webm">
+          <source src="assets/flipper.mp4" type="video/mp4">
+        </video>
+      </div>
+      <div class="copy rv d1">
+        <p class="kicker">SPECTRAL ODDITY</p>
+        <h3>Frequency Flipper</h3>
+        <p class="tag">Flip your whole frequency spectrum (WHAT!)</p>
+        <p class="tag2">We don't even remember how we made this!</p>
+        <p class="price"><span class="free">FREE</span> &middot; VST3 &middot; AU &middot; WIN / MAC</p>
+        <div class="actions">
+          <a class="btn btn-warm" href="#" data-buy="flipper">FREE? Gimme It!</a>
+          <a class="btn btn-ghost" href="#" data-more="flipper">See More</a>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="foot">
+    <div class="foot-in">
+      <div>
+        <div class="foot-brand">
+          <svg class="mark" aria-hidden="true"><use href="#rs-mark"/></svg>
+          <span>RIDGE SOUND</span>
+        </div>
+        <p>The world's least possible plugins. Made for people who would rather break the signal than smooth it.</p>
+      </div>
+      <div id="docs">
+        <h4>Documentation</h4>
+        <ul>
+          <li><a href="#docs">Fold EQ Manual<span class="soon">SOON</span></a></li>
+          <li><a href="#docs">Frequency Flipper Manual<span class="soon">SOON</span></a></li>
+          <li><a href="#docs">Installation<span class="soon">SOON</span></a></li>
+          <li><a href="#docs">License &amp; Activation<span class="soon">SOON</span></a></li>
+        </ul>
+      </div>
+      <div id="contact">
+        <h4>Contact</h4>
+        <p><a class="lnk" href="mailto:hello@ridgesound.com">hello@ridgesound.com</a></p>
+        <p>Support, bug reports, and unspeakable dimension complaints.</p>
+      </div>
+    </div>
+    <div class="foot-bot">
+      <span>&copy; <span id="yr"></span> RIDGE SOUND</span>
+      <span>BUILT IN THE DARK</span>
+    </div>
+  </footer>
+
+</div>
+
+<script src="assets/three.min.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  /* ==========================================================
+     0. Headline — split into words for a staggered reveal
+     ========================================================== */
+  (function headline() {
+    var el = document.getElementById('headline');
+    if (!el) return;
+    var words = ["The", "World's", "Least", "Possible", "Plugins"];
+    el.innerHTML = words.map(function (w, i) {
+      var cls = (i >= 3) ? 'w glow' : 'w';
+      return '<span class="' + cls + '" style="animation-delay:' + (0.42 + i * 0.11).toFixed(2) + 's">' + w + '</span>';
+    }).join(' ');
+  })();
+
+  document.getElementById('yr').textContent = new Date().getFullYear();
+
+  /* ==========================================================
+     1. Nav behaviour
+     ========================================================== */
+  var nav = document.getElementById('nav');
+  var account = document.getElementById('account');
+  var acctBtn = document.getElementById('acctBtn');
+
+  acctBtn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    var open = account.classList.toggle('open');
+    acctBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  document.addEventListener('click', function () {
+    account.classList.remove('open');
+    acctBtn.setAttribute('aria-expanded', 'false');
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      account.classList.remove('open');
+      acctBtn.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  /* placeholders — these get wired to Lemon Squeezy later */
+  Array.prototype.forEach.call(
+    document.querySelectorAll('[data-buy],[data-more],[data-auth]'),
+    function (a) { a.addEventListener('click', function (e) { e.preventDefault(); }); }
+  );
+
+  /* ==========================================================
+     2. Reveal on scroll
+     ========================================================== */
+  var revealables = document.querySelectorAll('.rv');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    Array.prototype.forEach.call(revealables, function (el) { io.observe(el); });
+  } else {
+    Array.prototype.forEach.call(revealables, function (el) { el.classList.add('in'); });
+  }
+
+  /* ==========================================================
+     3. Autoplay guard for the plugin clips
+     ========================================================== */
+  Array.prototype.forEach.call(document.querySelectorAll('video'), function (v) {
+    var tryPlay = function () { var p = v.play(); if (p && p.catch) { p.catch(function () {}); } };
+    tryPlay();
+    v.addEventListener('canplay', tryPlay);
+  });
+
+  /* ==========================================================
+     4. WebGL — liquid metal hero + parallax star / dust field
+     ========================================================== */
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var canvas = document.getElementById('gl');
+
+  if (typeof THREE === 'undefined') { document.documentElement.classList.add('nofx'); return; }
+
+  var renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({
+      canvas: canvas, antialias: false, alpha: false,
+      powerPreference: 'high-performance', stencil: false, depth: false
+    });
+  } catch (err) {
+    document.documentElement.classList.add('nofx');
+    return;
+  }
+
+  var W = window.innerWidth, H = window.innerHeight;
+  var DPR = Math.min(window.devicePixelRatio || 1, 1.75);
+  var MOBILE = W < 760;
+
+  renderer.setPixelRatio(DPR);
+  renderer.setSize(W, H, false);
+  renderer.setClearColor(0x05070b, 1);
+  renderer.autoClear = false;
+
+  /* shared ortho camera for the two fullscreen passes */
+  var quadCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+  var quadGeo = new THREE.PlaneBufferGeometry(2, 2);
+
+  var QUAD_VERT = [
+    'varying vec2 vUv;',
+    'void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }'
+  ].join('\n');
+
+  /* ---------- 4a. Liquid metal, rendered at half resolution ---------- */
+  var METAL_SCALE = MOBILE ? 0.40 : 0.55;
+
+  var rt = new THREE.WebGLRenderTarget(
+    Math.max(2, Math.floor(W * DPR * METAL_SCALE)),
+    Math.max(2, Math.floor(H * DPR * METAL_SCALE)),
+    {
+      minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter,
+      format: THREE.RGBAFormat, depthBuffer: false, stencilBuffer: false
+    }
+  );
+
+  var metalUniforms = {
+    uTime:   { value: 0 },
+    uAspect: { value: W / H },
+    uMouse:  { value: new THREE.Vector2(0, 0) }
+  };
+
+  var METAL_FRAG = [
+    'precision highp float;',
+    'varying vec2 vUv;',
+    'uniform float uTime;',
+    'uniform float uAspect;',
+    'uniform vec2  uMouse;',
+
+    'float hash(vec2 p){',
+    '  p = fract(p * vec2(123.34, 456.21));',
+    '  p += dot(p, p + 45.32);',
+    '  return fract(p.x * p.y);',
+    '}',
+
+    'float vnoise(vec2 p){',
+    '  vec2 i = floor(p), f = fract(p);',
+    '  vec2 u = f * f * (3.0 - 2.0 * f);',
+    '  float a = hash(i);',
+    '  float b = hash(i + vec2(1.0, 0.0));',
+    '  float c = hash(i + vec2(0.0, 1.0));',
+    '  float d = hash(i + vec2(1.0, 1.0));',
+    '  return mix(mix(a, b, u.x), mix(c, d, u.x), u.y);',
+    '}',
+
+    'const mat2 M = mat2(1.62, 1.18, -1.18, 1.62);',
+
+    'float fbm(vec2 p){',
+    '  float v = 0.0, a = 0.5;',
+    '  for (int i = 0; i < 4; i++){ v += a * vnoise(p); p = M * p; a *= 0.5; }',
+    '  return v;',
+    '}',
+
+    /* domain-warped flow field -> laminar "poured metal" ribbons */
+    /* returns .x = height, .yz = the warp vector (drives the iridescence) */
+    'vec3 field(vec2 p, float t){',
+    '  vec2 q = vec2( fbm(p + vec2(0.0, 0.22 * t)),',
+    '                 fbm(p + vec2(5.2, 1.3) - vec2(0.17 * t, 0.0)) );',
+    '  vec2 r = vec2( fbm(p + 2.9 * q + vec2(1.7, 9.2) + 0.13 * t),',
+    '                 fbm(p + 2.9 * q + vec2(8.3, 2.8) + 0.106 * t) );',
+    '  return vec3(fbm(p + 2.35 * r), r);',
+    '}',
+
+    'void main(){',
+    '  vec2 uv = vUv;',
+    '  vec2 p  = (uv - 0.5) * vec2(uAspect, 1.0) * 2.35;',
+    '  p += uMouse * 0.09;',
+    '  float t = uTime;',
+
+    '  float e  = 0.0055;',
+    '  vec3  F  = field(p, t);',
+    '  float h  = F.x;',
+    '  float hx = field(p + vec2(e, 0.0), t).x;',
+    '  float hy = field(p + vec2(0.0, e), t).x;',
+
+    '  vec3 n = normalize(vec3((h - hx) / e * 0.055, (h - hy) / e * 0.055, 1.0));',
+    '  vec3 L = normalize(vec3(-0.34 + uMouse.x * 0.24, 0.52 + uMouse.y * 0.20, 0.78));',
+    '  float dif  = max(dot(n, L), 0.0);',
+    '  float spec = pow(max(dot(reflect(-L, n), vec3(0.0, 0.0, 1.0)), 0.0), 24.0);',
+    '  float fres = pow(1.0 - clamp(n.z, 0.0, 1.0), 2.2);',
+
+    /* Ridge Sound palette */
+    '  vec3 deep   = vec3(0.020, 0.030, 0.045);',
+    '  vec3 steel  = vec3(0.075, 0.125, 0.180);',
+    '  vec3 cyan   = vec3(0.247, 0.663, 0.961);',
+    '  vec3 ice    = vec3(0.498, 0.890, 1.000);',
+    '  vec3 violet = vec3(0.400, 0.360, 0.720);',
+    '  vec3 warm   = vec3(1.000, 0.705, 0.420);',
+
+    '  vec3 col = mix(deep, steel, smoothstep(0.20, 0.80, h));',
+    '  col = mix(col, cyan * 0.62, smoothstep(0.42, 0.96, h) * 0.88);',
+    '  col += violet * fres * 0.34;',
+    '  col += ice * spec * 0.95;',
+    '  col += warm * pow(dif, 4.0) * 0.075;',
+
+    /* iridescence — the warp vector shifts teal -> blue -> violet like an oil film */
+    '  float iri = clamp((F.y - F.z) * 2.2 + 0.5, 0.0, 1.0);',
+    '  vec3 filmA = vec3(0.10, 0.52, 0.66);',
+    '  vec3 filmB = vec3(0.38, 0.33, 0.80);',
+    '  col += mix(filmA, filmB, iri) * pow(clamp(h, 0.0, 1.0), 2.4) * 0.42;',
+
+    /* thin chromed contour lines riding the field */
+    '  float band = sin(h * 15.0 - t * 0.55);',
+    '  col += ice * smoothstep(0.88, 1.0, band) * 0.16;',
+
+    '  col *= 1.42;',
+
+    /* keep the middle calm so the headline stays legible */
+    '  float dc = length((uv - vec2(0.5, 0.48)) * vec2(uAspect * 0.70, 1.0));',
+    '  col *= mix(0.40, 1.0, smoothstep(0.10, 0.66, dc));',
+
+    /* vignette + top/bottom falloff */
+    '  float vig = 1.0 - 0.52 * pow(length((uv - 0.5) * vec2(1.05, 1.0)) * 1.32, 2.0);',
+    '  col *= clamp(vig, 0.0, 1.0);',
+    '  col *= smoothstep(0.0, 0.16, uv.y) * smoothstep(1.02, 0.72, uv.y);',
+
+    '  gl_FragColor = vec4(max(col, vec3(0.0)), 1.0);',
+    '}'
+  ].join('\n');
+
+  var metalScene = new THREE.Scene();
+  metalScene.add(new THREE.Mesh(quadGeo, new THREE.ShaderMaterial({
+    uniforms: metalUniforms,
+    vertexShader: QUAD_VERT,
+    fragmentShader: METAL_FRAG,
+    depthTest: false, depthWrite: false
+  })));
+
+  /* ---------- 4b. Blit pass — fades the metal out past the hero ---------- */
+  var blitUniforms = {
+    uTex:  { value: rt.texture },
+    uFade: { value: 1.0 },
+    uRes:  { value: new THREE.Vector2(W, H) }
+  };
+
+  var blitScene = new THREE.Scene();
+  blitScene.add(new THREE.Mesh(quadGeo, new THREE.ShaderMaterial({
+    uniforms: blitUniforms,
+    vertexShader: QUAD_VERT,
+    fragmentShader: [
+      'precision mediump float;',
+      'varying vec2 vUv;',
+      'uniform sampler2D uTex;',
+      'uniform float uFade;',
+      'uniform vec2 uRes;',
+      'float h21(vec2 p){ return fract(sin(dot(p, vec2(41.0, 289.0))) * 43758.5453); }',
+      'void main(){',
+      '  vec3 c = texture2D(uTex, vUv).rgb * uFade;',
+      /* dither kills banding across the dark gradients */
+      '  c += (h21(vUv * uRes) - 0.5) * 0.0055;',
+      '  gl_FragColor = vec4(max(c, vec3(0.0)), 1.0);',
+      '}'
+    ].join('\n'),
+    depthTest: false, depthWrite: false
+  })));
+
+  /* ---------- 4c. Particle field ---------- */
+  var SPAN_Y = 96.0;
+  var COUNT = MOBILE ? 700 : 1900;
+
+  var pScene = new THREE.Scene();
+  var pCam = new THREE.PerspectiveCamera(58, W / H, 0.1, 220);
+  pCam.position.z = 34;
+
+  var pos   = new Float32Array(COUNT * 3);
+  var seed  = new Float32Array(COUNT);
+  var size  = new Float32Array(COUNT);
+  var depth = new Float32Array(COUNT);
+  var tint  = new Float32Array(COUNT);
+
+  for (var i = 0; i < COUNT; i++) {
+    var d = Math.pow(Math.random(), 0.72);       // bias toward far => lots of small stars
+    var z = -70.0 + d * 78.0;                    // -70 .. 8
+    var spread = 44.0 + (-z) * 0.72;
+    pos[i * 3]     = (Math.random() - 0.5) * 2.0 * spread;
+    pos[i * 3 + 1] = (Math.random() - 0.5) * SPAN_Y;
+    pos[i * 3 + 2] = z;
+    seed[i]  = Math.random();
+    depth[i] = d;
+    size[i]  = (0.55 + Math.pow(Math.random(), 3.2) * 3.1) * (0.55 + d * 0.85);
+    tint[i]  = Math.random();
+  }
+
+  var pGeo = new THREE.BufferGeometry();
+  pGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  pGeo.setAttribute('aSeed',    new THREE.BufferAttribute(seed, 1));
+  pGeo.setAttribute('aSize',    new THREE.BufferAttribute(size, 1));
+  pGeo.setAttribute('aDepth',   new THREE.BufferAttribute(depth, 1));
+  pGeo.setAttribute('aTint',    new THREE.BufferAttribute(tint, 1));
+
+  var pUniforms = {
+    uTime:   { value: 0 },
+    uScroll: { value: 0 },  // smoothed scroll — lags the page, giving the fluid drag
+    uDrag:   { value: 0 },  // instantaneous lag, smears the sprites
+    uPR:     { value: DPR },
+    uSpan:   { value: SPAN_Y }
+  };
+
+  var pMat = new THREE.ShaderMaterial({
+    uniforms: pUniforms,
+    transparent: true,
+    depthTest: false,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+    vertexShader: [
+      'attribute float aSeed;',
+      'attribute float aSize;',
+      'attribute float aDepth;',
+      'attribute float aTint;',
+      'uniform float uTime;',
+      'uniform float uScroll;',
+      'uniform float uDrag;',
+      'uniform float uPR;',
+      'uniform float uSpan;',
+      'varying float vTw;',
+      'varying float vTint;',
+      'varying float vSmear;',
+
+      'void main(){',
+      '  vec3 p = position;',
+      /* near particles travel further with the scroll than far ones */
+      '  float par = mix(0.16, 1.05, aDepth);',
+      /* extra lag on the nearest layers -> fluid "dragging behind" */
+      '  float lag = uDrag * mix(0.25, 1.60, aDepth);',
+      '  float y = p.y + uScroll * par + lag;',
+      /* wrap so the field never runs out */
+      '  y = mod(y + uSpan * 0.5, uSpan) - uSpan * 0.5;',
+      '  p.y = y;',
+      /* slow drift, like dust in still air */
+      '  p.x += sin(uTime * 0.11 + aSeed * 24.0) * (0.5 + aDepth * 2.2);',
+      '  p.y += cos(uTime * 0.09 + aSeed * 17.0) * (0.3 + aDepth * 1.1);',
+
+      '  vec4 mv = modelViewMatrix * vec4(p, 1.0);',
+      '  gl_Position = projectionMatrix * mv;',
+
+      /* twinkle: slow breathe + rare sharp glisten */
+      '  float tw = 0.52 + 0.48 * sin(uTime * (0.5 + aSeed * 1.9) + aSeed * 61.0);',
+      '  tw = pow(clamp(tw, 0.0, 1.0), 1.9);',
+      '  float gs = pow(max(sin(uTime * 0.33 + aSeed * 43.0), 0.0), 46.0);',
+      '  vTw = tw * 0.82 + gs * 1.25;',
+      '  vTint = aTint;',
+      '  vSmear = clamp(abs(uDrag) * 0.07, 0.0, 1.1);',
+
+      '  float ps = aSize * (128.0 / max(-mv.z, 1.0)) * uPR;',
+      '  gl_PointSize = clamp(ps * (0.72 + vTw * 0.55), 1.0, 22.0);',
+      '}'
+    ].join('\n'),
+    fragmentShader: [
+      'precision mediump float;',
+      'varying float vTw;',
+      'varying float vTint;',
+      'varying float vSmear;',
+      'void main(){',
+      '  vec2 pc = gl_PointCoord - 0.5;',
+      /* vertical smear while scrolling fast */
+      '  pc.y /= (1.0 + vSmear);',
+      '  float d = length(pc);',
+      '  if (d > 0.5) discard;',
+      '  float core = smoothstep(0.30, 0.0, d);',
+      '  float halo = pow(1.0 - clamp(d * 2.0, 0.0, 1.0), 2.6);',
+      '  float a = (core * 0.85 + halo * 0.42) * vTw;',
+      /* mostly cool white, some cyan, a rare warm ember */
+      '  vec3 c = mix(vec3(0.86, 0.93, 1.00), vec3(0.42, 0.76, 1.00), smoothstep(0.35, 0.90, vTint));',
+      '  c = mix(c, vec3(1.00, 0.80, 0.58), smoothstep(0.94, 1.00, vTint));',
+      '  gl_FragColor = vec4(c, clamp(a, 0.0, 1.0) * 0.9);',
+      '}'
+    ].join('\n')
+  });
+
+  pScene.add(new THREE.Points(pGeo, pMat));
+
+  /* ---------- 4d. Scroll + pointer state ---------- */
+  var scrollTarget = 0, scrollSmooth = 0;
+  var mouseX = 0, mouseY = 0, mTX = 0, mTY = 0;
+  var SCROLL_TO_WORLD = 0.021;
+  var hero = document.getElementById('hero');
+
+  function onScroll() {
+    var y = window.pageYOffset || document.documentElement.scrollTop || 0;
+    scrollTarget = y * SCROLL_TO_WORLD;
+    if (y > 12) { nav.classList.add('stuck'); } else { nav.classList.remove('stuck'); }
+    var heroH = Math.max(1, hero.offsetHeight);
+    blitUniforms.uFade.value = Math.max(0, Math.min(1, 1.0 - (y / (heroH * 0.85))));
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  window.addEventListener('pointermove', function (e) {
+    mTX = (e.clientX / window.innerWidth) * 2 - 1;
+    mTY = -((e.clientY / window.innerHeight) * 2 - 1);
+  }, { passive: true });
+
+  function onResize() {
+    W = window.innerWidth; H = window.innerHeight;
+    MOBILE = W < 760;
+    renderer.setSize(W, H, false);
+    metalUniforms.uAspect.value = W / H;
+    blitUniforms.uRes.value.set(W, H);
+    rt.setSize(Math.max(2, Math.floor(W * DPR * METAL_SCALE)),
+               Math.max(2, Math.floor(H * DPR * METAL_SCALE)));
+    pCam.aspect = W / H;
+    pCam.updateProjectionMatrix();
+    onScroll();
+  }
+  window.addEventListener('resize', onResize, { passive: true });
+
+  var visible = true;
+  document.addEventListener('visibilitychange', function () { visible = !document.hidden; });
+
+  /* ---------- 4e. Loop ---------- */
+  var t0 = (window.performance && performance.now) ? performance.now() : Date.now();
+  var last = t0;
+
+  function frame(now) {
+    requestAnimationFrame(frame);
+    if (!visible) { last = now; return; }
+
+    var dt = Math.min((now - last) / 1000, 0.05);
+    last = now;
+    var t = (now - t0) / 1000;
+
+    /* smoothed scroll => the field lags the page like a fluid */
+    var k = 1.0 - Math.pow(0.0016, dt);
+    scrollSmooth += (scrollTarget - scrollSmooth) * k;
+    var drag = scrollTarget - scrollSmooth;
+
+    var mk = 1.0 - Math.pow(0.02, dt);
+    mouseX += (mTX - mouseX) * mk;
+    mouseY += (mTY - mouseY) * mk;
+
+    pUniforms.uTime.value = reduced ? 0.0 : t;
+    pUniforms.uScroll.value = scrollSmooth;
+    pUniforms.uDrag.value = Math.max(-6, Math.min(6, drag * 2.4));
+
+    /* gentle camera float — depth without motion sickness */
+    pCam.position.x = mouseX * 1.5;
+    pCam.position.y = mouseY * 0.9;
+    pCam.lookAt(0, 0, 0);
+
+    metalUniforms.uTime.value = reduced ? 12.0 : t * 0.42;
+    metalUniforms.uMouse.value.set(mouseX, mouseY);
+
+    /* skip the expensive metal pass once it has fully faded out */
+    var metalActive = blitUniforms.uFade.value > 0.004;
+
+    if (metalActive) {
+      renderer.setRenderTarget(rt);
+      renderer.clear(true, false, false);
+      renderer.render(metalScene, quadCam);
+      renderer.setRenderTarget(null);
+    }
+
+    renderer.clear(true, false, false);
+    if (metalActive) { renderer.render(blitScene, quadCam); }
+    renderer.render(pScene, pCam);
+  }
+
+  onResize();
+  onScroll();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
