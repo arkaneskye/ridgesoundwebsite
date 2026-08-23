@@ -1,5 +1,5 @@
 /* ============================================================
-   Ridge Sound — shared shell for content / legal pages
+   Ridge Sound. Shared shell for content and legal pages.
    Palette matches index.html (FoldEQ / Bloodwood / Partial Heat)
    ============================================================ */
 @font-face{font-family:'Cormorant';font-style:normal;font-weight:300 700;font-display:swap;src:url(fonts/cormorant.woff2) format('woff2')}
@@ -39,7 +39,6 @@ body{
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
   background:var(--bg-0);
-  background-image:linear-gradient(180deg,#0b1219 0%,#080d13 38%,var(--bg-0) 100%);
   background-attachment:fixed;
   overflow-x:hidden;
 }
@@ -117,17 +116,17 @@ a{color:inherit}
 .doc a:not(.btn):hover{border-bottom-color:var(--ice)}
 .doc em{color:var(--txt-dim)}
 
-/* callout — used for the merchant-of-record notice and the refund promise */
+/* callout: merchant-of-record notice and the refund promise */
 .callout{
   margin:0 0 22px;
   padding:20px 22px;
   border:1px solid var(--line);
   border-left:2px solid var(--line-hot);
   border-radius:0 3px 3px 0;
-  background:linear-gradient(90deg, rgba(63,169,245,.07), rgba(19,26,36,.35));
+  background:rgba(19,26,36,.42);
 }
 .callout p:last-child{margin-bottom:0}
-.callout.warm{border-left-color:rgba(255,180,107,.55);background:linear-gradient(90deg, rgba(255,180,107,.07), rgba(19,26,36,.35))}
+.callout.warm{border-left-color:rgba(255,180,107,.55);background:rgba(24,22,26,.42)}
 
 .kv{margin:0 0 17px;padding:0;list-style:none}
 .kv li{display:flex;gap:14px;flex-wrap:wrap;padding:11px 0;border-bottom:1px solid var(--line);margin:0}
@@ -139,15 +138,15 @@ a{color:inherit}
   padding:14px 26px;border-radius:2px;text-decoration:none;
   font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
   border:1px solid var(--line-hot);color:var(--txt-hi);
-  background:linear-gradient(180deg,rgba(63,169,245,.16),rgba(63,169,245,.05));
+  background:rgba(63,169,245,.11);
   transition:background .3s var(--ease),border-color .3s var(--ease);
 }
-.btn:hover{border-color:rgba(127,227,255,.72);background:linear-gradient(180deg,rgba(63,169,245,.28),rgba(63,169,245,.09))}
+.btn:hover{border-color:rgba(127,227,255,.72);background:rgba(63,169,245,.21)}
 
 /* ---------------- footer ---------------- */
 .foot{
   border-top:1px solid var(--line);
-  background:linear-gradient(180deg,rgba(10,14,20,.4),rgba(5,7,11,.92));
+  background:rgba(8,11,16,.72);
   padding:clamp(52px,7vw,84px) var(--pad) 36px;
 }
 .foot-in{max-width:var(--maxw);margin:0 auto;display:grid;grid-template-columns:minmax(0,2.1fr) minmax(0,.85fr) minmax(0,1.15fr);gap:clamp(32px,5vw,76px)}
