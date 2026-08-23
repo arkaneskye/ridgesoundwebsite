@@ -15,12 +15,16 @@
 
 <a class="skip" href="#doc">Skip to content</a>
 
-<header class="nav">
+<header class="nav nav--sticky">
   <a class="brand" href="./" aria-label="Ridge Sound home">
     <svg class="mark" viewBox="-9 -9 282 282" aria-hidden="true"><path d="M50.2123 158.173C58.7762 117.306 143.212 158.173 143.212 158.173C143.212 158.173 119.698 119.165 87.2123 105.529C61.0053 94.5293 6.21234 105.529 6.21234 105.529L87.2123 3.64041L258.212 158.173L241.212 258.529H150.212C150.212 258.529 43.2803 191.253 50.2123 158.173Z" fill="none" stroke="currentColor" stroke-width="11" stroke-linejoin="round"/></svg>
     <span class="brand-text">Ridge Sound</span>
   </a>
-  <nav class="links" aria-label="Primary">
+  <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="navlinks" aria-label="Menu">
+    <svg class="open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    <svg class="close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg>
+  </button>
+  <nav class="links" id="navlinks" aria-label="Primary">
     <a href="./#plugins">Plugins</a>
     <a href="downloads.html">Downloads</a>
     <a href="./#docs">Documentation</a>
@@ -29,7 +33,6 @@
 </header>
 
 <main class="doc" id="doc">
-  <p class="eyebrow">LEGAL</p>
   <h1>License Agreement</h1>
   <p class="updated">Last updated 23 August 2026 &nbsp;/&nbsp; Ridge Sound, a sole proprietorship of Gil Abrams &nbsp;/&nbsp; Los Angeles, California</p>
   <div class="callout"><p>This is the license agreement that ships inside the Fold EQ installer, reproduced here in full so you can read it before you buy. For the terms of the <em>purchase</em> itself, see the <a href="terms.html">Terms &amp; Conditions</a>.</p></div>
@@ -81,6 +84,7 @@
         <h2>Support</h2>
         <ul>
           <li><a href="contact.html">Contact</a></li>
+          <li><a href="https://license.ridgesound.com">Licence portal</a></li>
           <li><a class="lnk" href="mailto:support@ridgesound.com">support@ridgesound.com</a></li>
         </ul>
       </div>
@@ -100,6 +104,24 @@
     <span>Built in the dark</span>
   </div>
 </footer>
+
+<script>
+(function(){
+  var nav=document.querySelector('.nav'), btn=document.getElementById('menuBtn');
+  if(!nav||!btn) return;
+  btn.addEventListener('click',function(e){
+    e.stopPropagation();
+    var open=nav.classList.toggle('menu-open');
+    btn.setAttribute('aria-expanded', open?'true':'false');
+  });
+  document.addEventListener('click',function(){
+    nav.classList.remove('menu-open'); btn.setAttribute('aria-expanded','false');
+  });
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'){ nav.classList.remove('menu-open'); btn.setAttribute('aria-expanded','false'); }
+  });
+})();
+</script>
 
 </body>
 </html>
