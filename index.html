@@ -67,9 +67,11 @@
   min-height:100vh;min-height:100svh;
   display:grid;
   grid-template-columns:minmax(0,1fr) minmax(0,.44fr);
-  align-items:end;
+  /* Centred, with a slight downward bias so the block sits in the lower
+     middle of the fold rather than jammed against the bottom edge. */
+  align-items:center;
   gap:40px;
-  padding:calc(var(--nav-h) + 90px) var(--gut) 80px;
+  padding:calc(var(--nav-h) + 40px) var(--gut) clamp(96px,14vh,150px);
   max-width:var(--maxw);margin:0 auto;
 }
 .hero::before{
@@ -705,16 +707,26 @@ h1.headline em{font-style:italic;font-weight:300;color:#a9c6de}
       'varying vec2 vUv;',
       'uniform sampler2D uTex; uniform float uFade; uniform vec2 uRes;',
       'float h21(vec2 p){ return fract(sin(dot(p, vec2(41.0, 289.0))) * 43758.5453); }',
+      /* Composite toward the page ground, never toward black. Multiplying by
+         uFade used to drive this to 0,0,0 while the clear colour behind it was
+         #05070b, so the frame the metal pass switched off jumped a full step
+         brighter. Mixing to the ground makes the faded state identical to the
+         skipped state. */
+      'const vec3 GROUND = vec3(0.019608, 0.027451, 0.043137);',
       'void main(){',
-      '  vec3 c = texture2D(uTex, vUv).rgb * uFade;',
-      '  c += (h21(vUv * uRes) - 0.5) * 0.0055;',
+      '  vec3 c = mix(GROUND, texture2D(uTex, vUv).rgb, uFade);',
+      '  c += (h21(vUv * uRes) - 0.5) * 0.0055 * uFade;',
       '  gl_FragColor = vec4(max(c, vec3(0.0)), 1.0);',
       '}'
     ].join('\n'),
     depthTest: false, depthWrite: false
   })));
 
-  /* ---------- dust ---------- */
+  /* ---------- dust ----------
+     Flip DUST to true to bring the drifting motes back. Everything else
+     about them is unchanged, so it is a one-word switch.                */
+  var DUST = false;
+
   var SPAN_Y = 96.0;
   var COUNT = MOBILE ? 520 : 1250;
 
@@ -795,7 +807,7 @@ h1.headline em{font-style:italic;font-weight:300;color:#a9c6de}
       '}'
     ].join('\n')
   });
-  pScene.add(new THREE.Points(pGeo, pMat));
+  if (DUST) { pScene.add(new THREE.Points(pGeo, pMat)); }
 
   /* ---------- state ---------- */
   var scrollTarget = 0, scrollSmooth = 0;
@@ -870,7 +882,7 @@ h1.headline em{font-style:italic;font-weight:300;color:#a9c6de}
     }
     renderer.clear(true, false, false);
     if (metalActive) { renderer.render(blitScene, quadCam); }
-    renderer.render(pScene, pCam);
+    if (DUST) { renderer.render(pScene, pCam); }
   }
 
   onResize();
