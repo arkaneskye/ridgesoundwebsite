@@ -1,0 +1,2 @@
+df5107f785b1b3413bd43750037b7e11a114fdd348722ad0fa2d3e9eafae4a75  FoldEQ-Setup-v1.0-Windows.exe
+850de053cec1125783346b1865e775f10c568f2b3dc3993b012ff7521f75adcd  FoldEQ-v1.0-macOS.pkg

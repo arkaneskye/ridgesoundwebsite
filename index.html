@@ -337,6 +337,9 @@ h1.headline em{
 .buy .fig sup{font-size:1.1rem;font-weight:400;top:-1.1em;margin-right:2px;color:var(--txt-dim)}
 .buy .terms{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--txt-faint);margin:7px 0 0}
 .buy .acts{display:flex;gap:10px;flex-wrap:wrap;margin-left:auto}
+.avail{margin:20px 0 0;font-size:13.4px;line-height:1.7;color:var(--txt-dim);max-width:46ch}
+.avail a{color:var(--ice);border-bottom:1px solid rgba(127,227,255,.3)}
+.avail a:hover{border-bottom-color:var(--ice)}
 
 /* ---------- secondary products: quieter, two-up ---------- */
 .coming{
@@ -481,6 +484,7 @@ h1.headline em{
     </a>
     <nav class="links" aria-label="Primary">
       <a href="#plugins">Plugins</a>
+      <a href="downloads.html">Downloads</a>
       <a href="#docs">Documentation</a>
       <a href="contact.html">Contact</a>
     </nav>
@@ -540,7 +544,7 @@ h1.headline em{
       </div>
 
       <div class="lead-copy rv d1">
-        <p class="kicker mono">Equalizer / Shipping now</p>
+        <p class="kicker mono">Equalizer / v1.0 ready</p>
         <h3>Fold EQ</h3>
         <p class="claim">World's least possible EQ.</p>
         <p class="aside">Fold into unspeakable dimensions.</p>
@@ -558,10 +562,14 @@ h1.headline em{
             <p class="terms">One time. 14-day refund.</p>
           </div>
           <div class="acts">
-            <a class="btn" href="#" data-buy="foldeq">Buy <span class="arw">&rarr;</span></a>
-            <a class="btn btn-ghost" href="#" data-more="foldeq">Try the demo</a>
+            <span class="btn btn-soon" aria-disabled="true">Buy: coming soon</span>
+            <a class="btn btn-ghost" href="downloads.html">Download the demo <span class="arw">&rarr;</span></a>
           </div>
         </div>
+        <p class="avail">Fold EQ v1.0 is finished, code signed and notarized for both platforms,
+        and the demo is the same installer you get when you buy. Checkout opens as soon as our
+        payment provider has finished verifying us. Until then,
+        <a href="mailto:support@ridgesound.com">support@ridgesound.com</a> reaches a human.</p>
       </div>
     </article>
 
@@ -623,8 +631,9 @@ h1.headline em{
       <div id="docs">
         <h2>Documentation</h2>
         <ul>
+          <li><a href="downloads.html">Downloads</a></li>
           <li><a href="#docs">Fold EQ manual<span class="soon">Soon</span></a></li>
-          <li><a href="#docs">Installing<span class="soon">Soon</span></a></li>
+          <li><a href="downloads.html">Installing</a></li>
           <li><a href="contact.html">Licence and activation</a></li>
         </ul>
       </div>
