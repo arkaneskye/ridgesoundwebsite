@@ -36,8 +36,6 @@
 
   window.RidgeSoundPaddle = PADDLE;
 
-  if (!PADDLE.enabled) return;
-
   if (typeof Paddle === 'undefined') {
     console.warn('[RidgeSound] Paddle.js did not load — checkout disabled.');
     return;
@@ -73,12 +71,23 @@
     }
   });
 
+  // Initialised means pay.html can hand off to Paddle. This deliberately does
+  // NOT depend on PADDLE.enabled: pay.html is the default payment link target,
+  // and Paddle only opens a checkout from ?_ptxn= after Initialize() has run.
+  // Coupling the two would leave real payment links dead whenever the store
+  // button happens to be switched off.
+  PADDLE.ready = true;
+
   window.RidgeSoundPaddle.open = function () {
     Paddle.Checkout.open({
       items: [{ priceId: PADDLE.priceId, quantity: 1 }],
       settings: { variant: 'one-page', theme: 'dark' }
     });
   };
+
+  /* Everything below is the STORE BUTTON only, and stays off until the flag
+     is flipped. Paddle itself is already initialised above. */
+  if (!PADDLE.enabled) return;
 
   /* Upgrade the "coming soon" placeholder into a live buy button.
      Absent on pay.html, which is fine — Paddle.js opens the checkout there

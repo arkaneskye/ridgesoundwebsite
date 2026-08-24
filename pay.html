@@ -46,7 +46,7 @@
 (function () {
   var hasTxn = new URLSearchParams(location.search).has('_ptxn');
   var cfg = window.RidgeSoundPaddle || {};
-  if (hasTxn && cfg.enabled) return;         // Paddle.js is taking it from here
+  if (hasTxn && cfg.ready) return;           // Paddle.js is taking it from here
 
   document.getElementById('head').textContent = hasTxn
     ? 'Checkout is not open yet'
