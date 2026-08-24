@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex,nofollow" />
+<title>Live checkout test &middot; Ridge Sound</title>
+<link rel="stylesheet" href="assets/site.css" />
+<style>
+  .t{max-width:min(60ch,100%);margin:0 auto;padding:clamp(56px,9vw,110px) var(--gut);}
+  .t h1{margin:0 0 10px;font-family:var(--display);font-size:var(--t-head);font-weight:400;color:var(--txt-hi)}
+  .t p{margin:0 0 16px;font-size:var(--t-body);line-height:1.75;color:var(--txt-dim)}
+  .t ol{color:var(--txt-dim);font-size:var(--t-body);line-height:1.9;padding-left:20px}
+  .warn{border:1px solid var(--line-hot);border-radius:3px;padding:16px 18px;margin:0 0 26px;
+        background:rgba(63,169,245,.07);color:var(--txt)}
+  .t code{background:var(--bg-2);padding:2px 6px;border-radius:3px;font-family:var(--mono);font-size:.9em}
+</style>
+</head>
+<body>
+<main class="t">
+  <h1>Live checkout test</h1>
+
+  <p class="warn"><b>This is a REAL purchase against the live Paddle account.</b>
+  Your card will actually be charged $19.99. Refund it from the Paddle dashboard
+  when the test passes. This page is unlisted and noindex &mdash; delete it once
+  the public buy button is live.</p>
+
+  <p>Have <code>npx wrangler tail</code> running in another window before you click.</p>
+
+  <button class="btn" id="buy">Buy Fold EQ &mdash; $19.99 (REAL) <span class="arw">&rarr;</span></button>
+
+  <p id="state" style="margin-top:18px;color:var(--txt-faint)">Loading Paddle&hellip;</p>
+
+  <h2 style="font-family:var(--display);font-weight:400;color:var(--txt-hi);margin-top:40px">What should happen</h2>
+  <ol>
+    <li>Paddle overlay opens and takes the payment.</li>
+    <li>After ~1.5s you land on the licence portal with the order reference <b>already filled in</b>.</li>
+    <li>The tail shows <code>POST /api/webhook</code> &rarr; 200, with no rejection line.</li>
+    <li>Enter the email you paid with. The licence file downloads.</li>
+    <li>Load it into the shipping v1.0 build &mdash; splash changes from DEMO MODE to your name.</li>
+    <li>Refund the transaction in Paddle.</li>
+  </ol>
+</main>
+
+<script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+<script>
+(function () {
+  // Live values. No Paddle.Environment.set() — production is the default.
+  var TOKEN  = 'live_6641858eb3bf5c1c3c13ba4338d';
+  var PRICE  = 'pri_01m0rje9xbk3qmch7pg6atzg22';
+  var PORTAL = 'https://license.ridgesound.com/';
+
+  var state = document.getElementById('state');
+
+  if (typeof Paddle === 'undefined') {
+    state.textContent = 'Paddle.js failed to load. Check your network or an ad blocker.';
+    return;
+  }
+
+  Paddle.Initialize({
+    token: TOKEN,
+    eventCallback: function (ev) {
+      if (!ev || !ev.name) return;
+      state.textContent = 'Paddle event: ' + ev.name;
+      console.log('[checkout-test]', ev.name, ev.data);
+
+      if (ev.name === 'checkout.completed') {
+        var txn = ev.data && ev.data.transaction_id;
+        var url = new URL(PORTAL);
+        if (txn) url.searchParams.set('_ptxn', txn);
+        state.textContent = 'Paid. Redirecting to ' + url.toString();
+        setTimeout(function () { window.location.href = url.toString(); }, 1500);
+      }
+    }
+  });
+
+  state.textContent = 'Ready. Clicking Buy will charge a real card.';
+
+  document.getElementById('buy').addEventListener('click', function () {
+    Paddle.Checkout.open({
+      items: [{ priceId: PRICE, quantity: 1 }],
+      settings: { variant: 'one-page', theme: 'dark' }
+    });
+  });
+})();
+</script>
+</body>
+</html>
