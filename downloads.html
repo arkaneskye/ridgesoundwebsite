@@ -75,7 +75,7 @@
         <li><span>File</span> FoldEQ-v1.0-macOS.pkg</li>
         <li><span>Size</span> 4.8 MB</li>
         <li><span>Needs</span> macOS 10.13 or later</li>
-        <li><span>Installs</span> VST3 and Audio Unit. Universal, Intel and Apple Silicon.</li>
+        <li><span>Installs</span> VST3. Universal, Intel and Apple Silicon.</li>
         <li><span>Signed</span> Yes. Developer ID, notarized and stapled.</li>
       </ul>
     </div>
@@ -104,9 +104,12 @@
 
   <h3>macOS</h3>
   <p>Open the .pkg and follow the prompts. The VST3 goes to
-  <code>/Library/Audio/Plug-Ins/VST3</code> and the Audio Unit to
-  <code>/Library/Audio/Plug-Ins/Components</code>. Logic and GarageBand only rescan Audio Units at
-  launch, so quit and reopen them rather than just closing the project.</p>
+  <code>/Library/Audio/Plug-Ins/VST3</code>. Restart your DAW afterwards and rescan plugins if it
+  does not pick up Fold EQ on its own.</p>
+
+  <p><strong>Fold EQ is VST3 only.</strong> Logic Pro and GarageBand load only Audio Units, and
+  Pro Tools loads only AAX, so Fold EQ will not appear in any of them. On macOS you need a
+  VST3-capable DAW such as Ableton Live, FL Studio, Cubase, Reaper, Studio One or Bitwig.</p>
 
   <h2>Unlocking your copy</h2>
   <p>If you have bought Fold EQ, go to the
