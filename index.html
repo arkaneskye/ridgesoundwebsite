@@ -391,14 +391,14 @@ h1.headline em{font-style:italic;font-weight:300;color:#a9c6de}
             <p class="terms">One time. 14-day refund.</p>
           </div>
           <div class="acts">
-            <span class="btn btn-soon" aria-disabled="true">Buy: coming soon</span>
+            <span class="btn btn-soon" aria-disabled="true" id="buy-foldeq">Buy: coming soon</span>
             <a class="btn btn-ghost" href="downloads.html">Download the demo <span class="arw">&rarr;</span></a>
           </div>
         </div>
         <p class="avail">The demo is the same installer you get when you buy, so nothing is wasted
-        by trying it first. Checkout opens as soon as our payment provider has finished verifying
-        us. Until then, <a href="mailto:support@ridgesound.com">support@ridgesound.com</a> reaches
-        a human.</p>
+        by trying it first. <span id="buy-note">Checkout opens as soon as our payment provider has finished
+        verifying us. </span>Questions? <a href="mailto:support@ridgesound.com">support@ridgesound.com</a>
+        reaches a human.</p>
       </div>
     </article>
 
@@ -890,5 +890,8 @@ h1.headline em{font-style:italic;font-weight:300;color:#a9c6de}
   requestAnimationFrame(frame);
 })();
 </script>
+
+<script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+<script src="assets/checkout.js"></script>
 </body>
 </html>
