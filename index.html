@@ -44,6 +44,7 @@
   background:rgba(14,20,28,.55);
   transition:border-color .3s var(--ease),color .3s var(--ease),background .3s var(--ease);
 }
+.acct-btn{text-decoration:none}
 .acct-btn:hover,.account.open .acct-btn{color:var(--txt-hi);border-color:var(--line-mid);background:rgba(19,26,36,.7)}
 .acct-btn svg{width:14px;height:14px;opacity:.75}
 .acct-menu{
@@ -321,18 +322,15 @@ h1.headline em{font-style:italic;font-weight:300;color:#a9c6de}
       <a href="#docs">Documentation</a>
       <a href="contact.html">Contact</a>
     </nav>
-    <div class="account" id="account">
-      <button class="acct-btn" id="acctBtn" aria-haspopup="true" aria-expanded="false">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
-          <circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c1.2-4 4-6 7.5-6s6.3 2 7.5 6"/>
+    <div class="account">
+      <a class="acct-btn" href="https://license.ridgesound.com"
+         title="Already bought Fold EQ? Get your license and the installers.">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="8" cy="15.5" r="4.2"/><path d="M11 12.5 20.5 3M17.5 6l2.6 2.6M14.6 8.9l2.6 2.6"/>
         </svg>
-        <span class="lbl">Account</span>
-      </button>
-      <div class="acct-menu" role="menu">
-        <a href="#" role="menuitem" data-auth="signin">Sign in</a>
-        <div class="sep"></div>
-        <a href="#" role="menuitem" data-auth="signup">Sign up</a>
-      </div>
+        <span class="lbl">License Portal</span>
+      </a>
     </div>
   </header>
 
@@ -513,9 +511,6 @@ h1.headline em{font-style:italic;font-weight:300;color:#a9c6de}
   document.getElementById('yr').textContent = new Date().getFullYear();
 
   var nav = document.getElementById('nav');
-  var account = document.getElementById('account');
-  var acctBtn = document.getElementById('acctBtn');
-
   var menuBtn = document.getElementById('menuBtn');
   menuBtn.addEventListener('click', function (e) {
     e.stopPropagation();
@@ -523,20 +518,12 @@ h1.headline em{font-style:italic;font-weight:300;color:#a9c6de}
     menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
   });
 
-  acctBtn.addEventListener('click', function (e) {
-    e.stopPropagation();
-    var open = account.classList.toggle('open');
-    acctBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
-  });
   document.addEventListener('click', function () {
-    account.classList.remove('open');
-    acctBtn.setAttribute('aria-expanded', 'false');
     nav.classList.remove('menu-open');
     menuBtn.setAttribute('aria-expanded', 'false');
   });
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
-      account.classList.remove('open'); acctBtn.setAttribute('aria-expanded', 'false');
       nav.classList.remove('menu-open'); menuBtn.setAttribute('aria-expanded', 'false');
     }
   });
