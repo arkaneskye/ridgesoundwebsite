@@ -3,13 +3,25 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Ridge Sound &middot; The World's Least Possible Plugins</title>
-<meta name="description" content="Ridge Sound builds audio plugins for music producers. Fold EQ, Frequency Flipper, Partial Heat. VST3 for Windows and macOS." />
+<title>Fold EQ &middot; The EQ That Folds Time &middot; Ridge Sound</title>
+<meta name="description" content="Fold EQ by Ridge Sound: a 20-band EQ where every band can decide when a frequency arrives, not just how loud. Hear the before and after. VST3 for Windows and macOS, $19.99." />
 <meta name="theme-color" content="#05070b" />
 
-<meta property="og:title" content="Ridge Sound &middot; The World's Least Possible Plugins" />
-<meta property="og:description" content="Fold into unspeakable dimensions." />
-<meta property="og:type" content="website" />
+<link rel="canonical" href="https://ridgesound.com/" />
+
+<meta property="og:site_name" content="Ridge Sound" />
+<meta property="og:title" content="Fold EQ &middot; The EQ That Folds Time" />
+<meta property="og:description" content="A 20-band EQ where every band decides when a frequency arrives, not just how loud. Hear the before and after. $19.99, VST3 for Windows and macOS." />
+<meta property="og:type" content="product" />
+<meta property="og:url" content="https://ridgesound.com/" />
+<meta property="og:image" content="https://ridgesound.com/assets/og-foldeq.jpg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="The Fold EQ interface" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Fold EQ &middot; The EQ That Folds Time" />
+<meta name="twitter:description" content="A 20-band EQ where every band decides when a frequency arrives, not just how loud." />
+<meta name="twitter:image" content="https://ridgesound.com/assets/og-foldeq.jpg" />
 
 <link rel="preload" href="assets/fonts/cormorant.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="preload" href="assets/fonts/karla.woff2" as="font" type="font/woff2" crossorigin />
@@ -67,7 +79,7 @@
    the right, both centred on one line. */
 .hero{
   position:relative;
-  min-height:100vh;min-height:100svh;
+  min-height:84vh;min-height:84svh;
   display:grid;
   grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);
   align-items:center;
@@ -194,6 +206,155 @@ h1.hero-name{
 @keyframes railrun{0%{left:-24px}70%,100%{left:64px}}
 @keyframes rise{to{opacity:1;transform:none}}
 @keyframes fade{to{opacity:1}}
+
+
+/* ============================ DEMOS ============================ */
+/* Raised panel. Its top edge and heading sit above the fold on purpose,
+   so the page reads as "there is more here" without a scroll gimmick. */
+.demos{
+  position:relative;
+  background:var(--bg-1);
+  border-top:1px solid var(--line);
+  border-radius:20px 20px 0 0;
+  padding:clamp(52px,7vw,86px) var(--gut) clamp(56px,8vw,96px);
+}
+.demos-in,.feat-in,.cta-in{max-width:var(--maxw);margin:0 auto}
+.demos h2,.feat h2{
+  margin:0;font-family:var(--display);font-weight:300;
+  font-size:var(--t-title);line-height:1.05;color:var(--txt-hi);
+}
+.demos .lede{
+  margin:14px 0 0;max-width:56ch;
+  font-size:var(--t-body);line-height:1.75;color:var(--txt-dim);
+}
+
+/* Two pairs per row, never three: a before and its after must stay an
+   obvious unit, and three columns squeezes the processing line. */
+.ab-grid{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:clamp(34px,4.4vw,54px) clamp(24px,3.2vw,44px);
+  margin-top:clamp(34px,4.5vw,52px);
+}
+@media (max-width:720px){ .ab-grid{grid-template-columns:1fr} }
+/* One pair is one unit: the two clips sit tight together, and the space
+   between pairs is what separates them. */
+.ab{display:flex;flex-direction:column;gap:8px}
+.ab-name{
+  margin:0 0 10px;
+  font-family:var(--mono);font-size:var(--t-label);letter-spacing:.15em;
+  text-transform:uppercase;color:var(--txt-faint);
+}
+
+.clip{
+  display:grid;grid-template-columns:auto 1fr;align-items:center;
+  gap:16px;width:100%;text-align:left;
+  padding:14px 18px;
+  border:1px solid var(--line);border-radius:3px;
+  background:rgba(5,7,11,.4);color:var(--txt);
+  cursor:pointer;
+  transition:border-color .3s var(--ease),background .3s var(--ease);
+  -webkit-tap-highlight-color:transparent;
+}
+.clip:hover{border-color:var(--line-mid);background:rgba(19,26,36,.55)}
+.clip.on{border-color:rgba(127,227,255,.55);background:rgba(63,169,245,.12)}
+.clip--after{border-left:2px solid rgba(127,227,255,.3)}
+.clip.on .pp{color:var(--ice)}
+
+.pp{
+  display:grid;place-items:center;
+  width:32px;height:32px;border-radius:50%;
+  border:1px solid var(--line-mid);color:var(--txt);
+  transition:color .3s var(--ease),border-color .3s var(--ease);
+}
+.clip:hover .pp{border-color:var(--line-hot)}
+.pp svg{width:13px;height:13px;display:block}
+.pp .ic-pause{display:none}
+.clip.on .pp .ic-play{display:none}
+.clip.on .pp .ic-pause{display:block}
+
+.clip-txt{min-width:0}
+.clip-lab{
+  display:block;font-family:var(--mono);font-size:var(--t-label);
+  letter-spacing:.11em;text-transform:uppercase;color:var(--txt);
+}
+.clip.on .clip-lab{color:var(--txt-hi)}
+.clip-sub{
+  display:block;margin-top:4px;
+  font-size:var(--t-label);line-height:1.5;color:var(--txt-faint);
+}
+.clip-bar{
+  grid-column:1 / -1;height:1px;margin-top:2px;
+  background:var(--line);overflow:hidden;
+}
+.clip-bar i{display:block;height:100%;width:0;background:var(--ice)}
+
+/* ============================ FEATURES ============================ */
+.feat{padding:clamp(58px,8vw,104px) var(--gut);background:var(--bg-1)}
+.feat .motto{
+  margin:0 0 12px;
+  font-family:var(--display);font-style:italic;font-weight:300;
+  font-size:clamp(1.35rem,2.4vw,1.9rem);line-height:1.3;color:#a9c6de;
+  max-width:26ch;
+}
+.feat-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));
+  gap:clamp(28px,3.4vw,44px);
+  margin-top:clamp(36px,5vw,58px);
+}
+.feat-card{display:flex;flex-direction:column}
+.feat-shot{
+  aspect-ratio:3/2;display:grid;place-items:center;
+  background:var(--bg-0);border:1px solid var(--line);border-radius:3px;
+  padding:14px;overflow:hidden;
+}
+.feat-shot img{max-width:100%;max-height:100%;width:auto;height:auto;display:block}
+.feat-ic{
+  margin:22px 0 0;color:var(--ice);
+}
+.feat-ic svg{width:26px;height:26px;display:block}
+.feat-card h3{
+  margin:14px 0 0;
+  font-family:var(--display);font-weight:400;
+  font-size:var(--t-head);line-height:1.15;color:var(--txt-hi);
+}
+.feat-card p{
+  margin:12px 0 0;
+  font-size:var(--t-small);line-height:1.75;color:var(--txt-dim);
+}
+
+/* ============================ CLOSING CTA ============================ */
+.cta{
+  background:var(--bg-1);
+  padding:0 var(--gut) clamp(64px,9vw,110px);
+}
+.cta-in{
+  border-top:1px solid var(--line);
+  padding-top:clamp(40px,5vw,60px);
+  display:flex;align-items:center;justify-content:space-between;
+  gap:clamp(22px,4vw,50px);flex-wrap:wrap;
+}
+.cta h2{
+  margin:0;font-family:var(--display);font-weight:300;
+  font-size:var(--t-title);line-height:1.05;color:var(--txt-hi);
+}
+.cta .sub{margin:10px 0 0;font-size:var(--t-body);line-height:1.7;color:var(--txt-dim);max-width:40ch}
+.cta-side{display:flex;align-items:center;gap:clamp(18px,2.6vw,32px);flex-wrap:wrap}
+.cta .fig{
+  margin:0;font-family:var(--display);font-weight:300;
+  font-size:clamp(2.1rem,3.4vw,2.85rem);line-height:1;color:var(--txt-hi);
+  font-variant-numeric:lining-nums tabular-nums;
+  font-feature-settings:'lnum' 1,'tnum' 1;
+}
+.cta .fig sup{font-size:1.05rem;font-weight:400;top:-1.15em;margin-right:2px;color:var(--txt-dim)}
+.cta-acts{display:flex;gap:12px;flex-wrap:wrap}
+.cta-acts .btn{padding:16px 30px}
+
+@media (max-width:640px){
+  .cta-in{flex-direction:column;align-items:flex-start}
+  .cta-side{width:100%;flex-direction:column;align-items:flex-start;gap:18px}
+  .cta-acts{width:100%}
+  .cta-acts .btn{flex:1 1 auto;justify-content:center}
+}
 
 /* ============================ CATALOGUE ============================ */
 .catalogue{
@@ -337,9 +498,18 @@ h1.hero-name{
 .rv.d1{transition-delay:.09s}
 
 @media (max-width:1080px){
-  .hero{grid-template-columns:1fr;align-content:center;gap:clamp(26px,5vw,40px);
-        padding-top:calc(var(--nav-h) + 20px)}
-  .hero-what{max-width:52ch}
+  /* Phone: trim the hero just enough that the demos panel breaks the fold.
+     Seeing the next section start is the clearest "keep scrolling" cue there is. */
+  .hero{grid-template-columns:1fr;align-content:center;gap:22px;
+        padding-top:calc(var(--nav-h) + 16px);
+        padding-bottom:44px;min-height:0}
+  .hero-vid{aspect-ratio:2/1;object-fit:cover;transform:scale(1.06)}
+  .hero-what{max-width:52ch;margin-top:16px;line-height:1.65}
+  .eyebrow{margin-bottom:16px}
+  .hero-claim{margin-top:10px}
+  .hero-buy{margin-top:20px;padding-top:18px}
+  .hero-acts{margin-top:18px}
+  .hero-fine{margin-top:14px;font-size:var(--t-label);line-height:1.6}
   .lead{grid-template-columns:1fr;gap:34px}
 }
 @media (max-width:760px){
@@ -352,8 +522,9 @@ h1.hero-name{
   .buy{flex-direction:column;align-items:flex-start;gap:20px}
   .buy .acts{margin-left:0;width:100%}
   .buy .acts .btn,.buy .acts .btn-soon{flex:1 1 auto;justify-content:center}
-  .hero-acts{width:100%}
-  .hero-acts .btn{flex:1 1 auto;justify-content:center}
+  .hero-acts{width:100%;gap:10px;flex-wrap:nowrap}
+  .hero-acts .btn{flex:1 1 0;min-width:0;justify-content:center;
+                  padding:15px 12px;font-size:11px;letter-spacing:.06em;white-space:nowrap}
   .hero-buy{gap:12px}
   .scroll-hint{display:none}
   .spec{grid-template-columns:1fr;gap:3px 0}
@@ -369,6 +540,61 @@ h1.hero-name{
   .minor .frame{opacity:1}
 }
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://ridgesound.com/#org",
+      "name": "Ridge Sound",
+      "url": "https://ridgesound.com/",
+      "email": "support@ridgesound.com",
+      "logo": "https://ridgesound.com/assets/og-foldeq.jpg",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Los Angeles",
+        "addressRegion": "CA",
+        "addressCountry": "US"
+      }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://ridgesound.com/#foldeq",
+      "name": "Fold EQ",
+      "alternateName": "FoldEQ",
+      "applicationCategory": "MultimediaApplication",
+      "applicationSubCategory": "Audio plugin",
+      "softwareVersion": "1.0",
+      "operatingSystem": "Windows 10, Windows 11, macOS 10.13 or later",
+      "url": "https://ridgesound.com/",
+      "image": "https://ridgesound.com/assets/og-foldeq.jpg",
+      "description": "Fold EQ is a 20-band parametric equalizer with an extra axis on every band. A normal EQ decides how loud a frequency is; Fold EQ also decides when it arrives. Four fold modes (Time, Freq Shift, FFT, Transient), eleven band shapes, a DRAW mode that turns sketches into curves, five LFOs, four macros and three envelope followers. VST3 for Windows and macOS.",
+      "publisher": {
+        "@id": "https://ridgesound.com/#org"
+      },
+      "featureList": [
+        "20 bands with a fold axis",
+        "Four fold modes",
+        "Eleven band shapes",
+        "DRAW mode",
+        "Five LFOs, four macros, three envelope followers",
+        "Offline licensing with no activation limit"
+      ],
+      "offers": {
+        "@type": "Offer",
+        "price": "19.99",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock",
+        "url": "https://ridgesound.com/",
+        "seller": {
+          "@id": "https://ridgesound.com/#org"
+        }
+      }
+    }
+  ]
+}
+</script>
 </head>
 
 <body id="top">
@@ -449,10 +675,186 @@ h1.hero-name{
     <div class="scroll-hint"><span>More below</span><span class="rail"></span></div>
   </section>
 
+  <section class="demos" id="demos">
+    <div class="demos-in">
+      <h2>Audio Demos</h2>
+      <p class="lede">The same take twice. Nothing else in the chain, no other processing, no
+      level matching. Press play on one and the other stops.</p>
+
+      <div class="ab-grid">
+      <div class="ab rv">
+        <p class="ab-name">Simple Saw</p>
+        <button class="clip" type="button" data-clip="assets/audio/simple-saw-before.mp3"
+                aria-label="Play Before">
+          <span class="pp" aria-hidden="true"><svg class="ic-play" viewBox="0 0 12 14" fill="currentColor"><path d="M0 0l12 7-12 7z"/></svg><svg class="ic-pause" viewBox="0 0 12 14" fill="currentColor"><rect x="0" y="0" width="4" height="14"/><rect x="8" y="0" width="4" height="14"/></svg></span>
+          <span class="clip-txt"><span class="clip-lab">Before</span></span>
+          <span class="clip-bar"><i></i></span>
+        </button>
+        <button class="clip clip--after" type="button" data-clip="assets/audio/simple-saw-after.mp3"
+                aria-label="Play After">
+          <span class="pp" aria-hidden="true"><svg class="ic-play" viewBox="0 0 12 14" fill="currentColor"><path d="M0 0l12 7-12 7z"/></svg><svg class="ic-pause" viewBox="0 0 12 14" fill="currentColor"><rect x="0" y="0" width="4" height="14"/><rect x="8" y="0" width="4" height="14"/></svg></span>
+          <span class="clip-txt"><span class="clip-lab">After</span><span class="clip-sub">Runaway resonator + freq shift</span></span>
+          <span class="clip-bar"><i></i></span>
+        </button>
+      </div>
+
+      <div class="ab rv">
+        <p class="ab-name">Electric Guitar</p>
+        <button class="clip" type="button" data-clip="assets/audio/electric-guitar-before.mp3"
+                aria-label="Play Before">
+          <span class="pp" aria-hidden="true"><svg class="ic-play" viewBox="0 0 12 14" fill="currentColor"><path d="M0 0l12 7-12 7z"/></svg><svg class="ic-pause" viewBox="0 0 12 14" fill="currentColor"><rect x="0" y="0" width="4" height="14"/><rect x="8" y="0" width="4" height="14"/></svg></span>
+          <span class="clip-txt"><span class="clip-lab">Before</span></span>
+          <span class="clip-bar"><i></i></span>
+        </button>
+        <button class="clip clip--after" type="button" data-clip="assets/audio/electric-guitar-after.mp3"
+                aria-label="Play After">
+          <span class="pp" aria-hidden="true"><svg class="ic-play" viewBox="0 0 12 14" fill="currentColor"><path d="M0 0l12 7-12 7z"/></svg><svg class="ic-pause" viewBox="0 0 12 14" fill="currentColor"><rect x="0" y="0" width="4" height="14"/><rect x="8" y="0" width="4" height="14"/></svg></span>
+          <span class="clip-txt"><span class="clip-lab">After</span><span class="clip-sub">Time + feedback</span></span>
+          <span class="clip-bar"><i></i></span>
+        </button>
+      </div>
+
+      <div class="ab rv">
+        <p class="ab-name">Acoustic Guitar</p>
+        <button class="clip" type="button" data-clip="assets/audio/acoustic-guitar-before.mp3"
+                aria-label="Play Before">
+          <span class="pp" aria-hidden="true"><svg class="ic-play" viewBox="0 0 12 14" fill="currentColor"><path d="M0 0l12 7-12 7z"/></svg><svg class="ic-pause" viewBox="0 0 12 14" fill="currentColor"><rect x="0" y="0" width="4" height="14"/><rect x="8" y="0" width="4" height="14"/></svg></span>
+          <span class="clip-txt"><span class="clip-lab">Before</span></span>
+          <span class="clip-bar"><i></i></span>
+        </button>
+        <button class="clip clip--after" type="button" data-clip="assets/audio/acoustic-guitar-after.mp3"
+                aria-label="Play After">
+          <span class="pp" aria-hidden="true"><svg class="ic-play" viewBox="0 0 12 14" fill="currentColor"><path d="M0 0l12 7-12 7z"/></svg><svg class="ic-pause" viewBox="0 0 12 14" fill="currentColor"><rect x="0" y="0" width="4" height="14"/><rect x="8" y="0" width="4" height="14"/></svg></span>
+          <span class="clip-txt"><span class="clip-lab">After</span><span class="clip-sub">FFT</span></span>
+          <span class="clip-bar"><i></i></span>
+        </button>
+      </div>
+
+      <div class="ab rv">
+        <p class="ab-name">Bass Guitar</p>
+        <button class="clip" type="button" data-clip="assets/audio/bass-guitar-before.mp3"
+                aria-label="Play Before">
+          <span class="pp" aria-hidden="true"><svg class="ic-play" viewBox="0 0 12 14" fill="currentColor"><path d="M0 0l12 7-12 7z"/></svg><svg class="ic-pause" viewBox="0 0 12 14" fill="currentColor"><rect x="0" y="0" width="4" height="14"/><rect x="8" y="0" width="4" height="14"/></svg></span>
+          <span class="clip-txt"><span class="clip-lab">Before</span></span>
+          <span class="clip-bar"><i></i></span>
+        </button>
+        <button class="clip clip--after" type="button" data-clip="assets/audio/bass-guitar-after.mp3"
+                aria-label="Play After">
+          <span class="pp" aria-hidden="true"><svg class="ic-play" viewBox="0 0 12 14" fill="currentColor"><path d="M0 0l12 7-12 7z"/></svg><svg class="ic-pause" viewBox="0 0 12 14" fill="currentColor"><rect x="0" y="0" width="4" height="14"/><rect x="8" y="0" width="4" height="14"/></svg></span>
+          <span class="clip-txt"><span class="clip-lab">After</span><span class="clip-sub">Time + FFT + freq shift + feedback</span></span>
+          <span class="clip-bar"><i></i></span>
+        </button>
+      </div>
+
+      <div class="ab rv">
+        <p class="ab-name">Synth</p>
+        <button class="clip" type="button" data-clip="assets/audio/synth-before.mp3"
+                aria-label="Play Before">
+          <span class="pp" aria-hidden="true"><svg class="ic-play" viewBox="0 0 12 14" fill="currentColor"><path d="M0 0l12 7-12 7z"/></svg><svg class="ic-pause" viewBox="0 0 12 14" fill="currentColor"><rect x="0" y="0" width="4" height="14"/><rect x="8" y="0" width="4" height="14"/></svg></span>
+          <span class="clip-txt"><span class="clip-lab">Before</span></span>
+          <span class="clip-bar"><i></i></span>
+        </button>
+        <button class="clip clip--after" type="button" data-clip="assets/audio/synth-after.mp3"
+                aria-label="Play After">
+          <span class="pp" aria-hidden="true"><svg class="ic-play" viewBox="0 0 12 14" fill="currentColor"><path d="M0 0l12 7-12 7z"/></svg><svg class="ic-pause" viewBox="0 0 12 14" fill="currentColor"><rect x="0" y="0" width="4" height="14"/><rect x="8" y="0" width="4" height="14"/></svg></span>
+          <span class="clip-txt"><span class="clip-lab">After</span><span class="clip-sub">FFT + Time</span></span>
+          <span class="clip-bar"><i></i></span>
+        </button>
+      </div>
+
+      <div class="ab rv">
+        <p class="ab-name">Vocal High</p>
+        <button class="clip" type="button" data-clip="assets/audio/vocal-high-before.mp3"
+                aria-label="Play Before">
+          <span class="pp" aria-hidden="true"><svg class="ic-play" viewBox="0 0 12 14" fill="currentColor"><path d="M0 0l12 7-12 7z"/></svg><svg class="ic-pause" viewBox="0 0 12 14" fill="currentColor"><rect x="0" y="0" width="4" height="14"/><rect x="8" y="0" width="4" height="14"/></svg></span>
+          <span class="clip-txt"><span class="clip-lab">Before</span></span>
+          <span class="clip-bar"><i></i></span>
+        </button>
+        <button class="clip clip--after" type="button" data-clip="assets/audio/vocal-high-after.mp3"
+                aria-label="Play After">
+          <span class="pp" aria-hidden="true"><svg class="ic-play" viewBox="0 0 12 14" fill="currentColor"><path d="M0 0l12 7-12 7z"/></svg><svg class="ic-pause" viewBox="0 0 12 14" fill="currentColor"><rect x="0" y="0" width="4" height="14"/><rect x="8" y="0" width="4" height="14"/></svg></span>
+          <span class="clip-txt"><span class="clip-lab">After</span><span class="clip-sub">Time + freq shift</span></span>
+          <span class="clip-bar"><i></i></span>
+        </button>
+      </div>
+
+      <div class="ab rv">
+        <p class="ab-name">Vocal Low</p>
+        <button class="clip" type="button" data-clip="assets/audio/vocal-low-before.mp3"
+                aria-label="Play Before">
+          <span class="pp" aria-hidden="true"><svg class="ic-play" viewBox="0 0 12 14" fill="currentColor"><path d="M0 0l12 7-12 7z"/></svg><svg class="ic-pause" viewBox="0 0 12 14" fill="currentColor"><rect x="0" y="0" width="4" height="14"/><rect x="8" y="0" width="4" height="14"/></svg></span>
+          <span class="clip-txt"><span class="clip-lab">Before</span></span>
+          <span class="clip-bar"><i></i></span>
+        </button>
+        <button class="clip clip--after" type="button" data-clip="assets/audio/vocal-low-after.mp3"
+                aria-label="Play After">
+          <span class="pp" aria-hidden="true"><svg class="ic-play" viewBox="0 0 12 14" fill="currentColor"><path d="M0 0l12 7-12 7z"/></svg><svg class="ic-pause" viewBox="0 0 12 14" fill="currentColor"><rect x="0" y="0" width="4" height="14"/><rect x="8" y="0" width="4" height="14"/></svg></span>
+          <span class="clip-txt"><span class="clip-lab">After</span><span class="clip-sub">Freq shift + FFT + Time</span></span>
+          <span class="clip-bar"><i></i></span>
+        </button>
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="feat" id="features">
+    <div class="feat-in">
+      <p class="motto rv">A classic meme turned into a sound design machine.</p>
+      <h2 class="rv">What it actually does</h2>
+
+      <div class="feat-grid">
+        <article class="feat-card rv">
+          <div class="feat-shot"><img src="assets/feat-bands.webp" alt="Fold EQ spectrum with folded bands and a hand-drawn curve" loading="lazy" width="1400" height="703"></div>
+          <div class="feat-ic"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M1 18c3.5 0 3.5-9 7-9s3.5 9 7 9 3.5-9 7-9 3.5 4.5 5 4.5"/></svg></div>
+          <h3>Radical Band Control</h3>
+          <p>Fold bands left and right, over each other, to enjoy a plethora of multi-band sound
+          design miracles only possible now!</p>
+        </article>
+
+        <article class="feat-card rv d1">
+          <div class="feat-shot"><img src="assets/feat-options.webp" alt="Band type list, fold mode list and the serial chain editor" loading="lazy" width="1200" height="800"></div>
+          <div class="feat-ic"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M14 2c0 6.6 5.4 12 12 12-6.6 0-12 5.4-12 12 0-6.6-5.4-12-12-12 6.6 0 12-5.4 12-12z"/></svg></div>
+          <h3>Endless Options</h3>
+          <p>Choose between 4 different &lsquo;Fold&rsquo; modes on 11 different band types including
+          Ripple, Brownian, and Runaway Resonator. Each Fold mode has a different left&ndash;right
+          function: Time is prelay&ndash;delay, freq shift is negative&ndash;positive, FFT is phase
+          lock&ndash;spectral gate, and Transient is cut&ndash;boost. Also included is a serial
+          signal flow node dragger when in serial mode.</p>
+        </article>
+
+        <article class="feat-card rv d1">
+          <div class="feat-shot"><img src="assets/feat-mod.webp" alt="Macro knobs, LFO and envelope follower tabs" loading="lazy" width="1400" height="240"></div>
+          <div class="feat-ic"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M1 14c0-6 2.9-9 6.5-9S14 8 14 14s2.9 9 6.5 9S27 20 27 14"/></svg></div>
+          <h3>Maximum Modulation</h3>
+          <p>Nearly everything can be modulated with 5 customizable LFOs, 4 mappable macros, and 3
+          envelope followers to make your sounds flow into uncharted territory. Go even further with
+          our Mod Matrix section that allows any combination of modulators as well as Aux Mods.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta" id="get">
+    <div class="cta-in">
+      <div>
+        <h2>Get Fold EQ</h2>
+        <p class="sub">The demo is the same installer you get when you buy, so nothing is wasted
+        by trying it first.</p>
+      </div>
+      <div class="cta-side">
+        <p class="fig"><sup>$</sup>19.99</p>
+        <div class="cta-acts">
+          <span class="btn btn-soon" data-buy="foldeq" aria-disabled="true">Buy: coming soon</span>
+          <a class="btn btn-ghost" href="downloads.html">Try it free <span class="arw">&rarr;</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="catalogue" id="plugins">
     <div class="sec-head rv">
-      <h2>Plugins</h2>
-      <span class="n mono mono--caps">Three</span>
+      <h2>The details</h2>
+      <span class="n mono mono--caps">Fold EQ</span>
     </div>
 
     <p class="sec-intro rv">A plugin is a piece of software that runs inside a music production
@@ -460,8 +862,8 @@ h1.hero-name{
     Cubase, Reaper. It sits in the signal path and changes the sound on its way through.
     Ours install as <b>VST3</b> on both Windows and macOS, so you need a DAW that loads VST3.
     <b>Logic Pro and GarageBand load only Audio Units, and Pro Tools loads only AAX, so none of
-    those can host our plugins.</b> Everything here runs unlocked in demo mode for as long as you
-    like, so you can hear it on your own material first.</p>
+    those can host our plugins.</b> Fold EQ runs unlocked in demo mode for as long as you like, so you
+    can hear it on your own material first.</p>
 
     <article class="lead">
       <div class="frame rv">
@@ -484,16 +886,6 @@ h1.hero-name{
           <dt>Licence</dt><dd><b>Every computer you own.</b> No activation count, no machine binding, no online check.</dd>
         </dl>
 
-        <div class="buy">
-          <div>
-            <p class="fig"><sup>$</sup>19.99</p>
-            <p class="terms">One time. 14-day refund.</p>
-          </div>
-          <div class="acts">
-            <span class="btn btn-soon" aria-disabled="true" id="buy-foldeq" data-buy="foldeq">Buy: coming soon</span>
-            <a class="btn btn-ghost" href="downloads.html">Download the demo <span class="arw">&rarr;</span></a>
-          </div>
-        </div>
         <p class="avail">The demo is the same installer you get when you buy, so nothing is wasted
         by trying it first. <span id="buy-note">Checkout opens as soon as our payment provider has finished
         verifying us. </span>Questions? <a href="mailto:support@ridgesound.com">support@ridgesound.com</a>
@@ -501,42 +893,6 @@ h1.hero-name{
       </div>
     </article>
 
-    <div class="coming">
-      <h2>In the works</h2>
-
-      <div class="pair">
-        <article class="minor rv">
-          <div class="frame">
-            <div class="ribbon"><span>Free</span></div>
-            <video autoplay loop muted playsinline preload="metadata" poster="assets/flipper-poster.jpg" aria-label="Frequency Flipper interface">
-              <source src="assets/flipper.webm" type="video/webm">
-              <source src="assets/flipper.mp4" type="video/mp4">
-            </video>
-          </div>
-          <h3>Frequency Flipper</h3>
-          <p class="claim">Flip your whole frequency spectrum. What!</p>
-          <p class="aside">We don't even remember how we made this.</p>
-          <div class="foot-row">
-            <span class="mono mono--caps free">Free when it lands</span>
-            <span class="btn btn-soon" aria-disabled="true">Coming soon</span>
-          </div>
-        </article>
-
-        <article class="minor rv d1">
-          <div class="frame mystery" role="img" aria-label="Partial Heat, interface not yet revealed">
-            <span class="qmark" aria-hidden="true">?</span>
-            <span class="qlabel">Interface classified</span>
-          </div>
-          <h3>Partial Heat</h3>
-          <p class="claim">We're not telling you yet.</p>
-          <p class="aside">It gets warm in there.</p>
-          <div class="foot-row">
-            <span class="mono mono--caps">No date announced</span>
-            <span class="btn btn-soon" aria-disabled="true">Coming soon</span>
-          </div>
-        </article>
-      </div>
-    </div>
   </section>
   </main>
 
@@ -621,6 +977,52 @@ h1.hero-name{
     document.querySelectorAll('[data-buy],[data-more],[data-auth]'),
     function (a) { a.addEventListener('click', function (e) { e.preventDefault(); }); }
   );
+
+  /* ---- audio demos ----
+     One Audio element for the whole page, which is what guarantees a second
+     clip can never start while the first is still playing. */
+  (function () {
+    var clips = document.querySelectorAll('.clip');
+    if (!clips.length) return;
+
+    var player = new Audio();
+    player.preload = 'none';
+    var current = null;
+
+    function clear() {
+      if (!current) return;
+      current.classList.remove('on');
+      current.setAttribute('aria-pressed', 'false');
+      current.querySelector('.clip-bar i').style.width = '0';
+      current = null;
+    }
+
+    player.addEventListener('timeupdate', function () {
+      if (!current || !player.duration) return;
+      current.querySelector('.clip-bar i').style.width =
+        (player.currentTime / player.duration * 100).toFixed(2) + '%';
+    });
+    player.addEventListener('ended', clear);
+    player.addEventListener('error', clear);
+
+    Array.prototype.forEach.call(clips, function (btn) {
+      btn.setAttribute('aria-pressed', 'false');
+      btn.addEventListener('click', function () {
+        var again = current === btn;
+        player.pause();
+        clear();
+        if (again) return;               /* clicking the playing clip stops it */
+
+        player.src = btn.getAttribute('data-clip');
+        current = btn;
+        btn.classList.add('on');
+        btn.setAttribute('aria-pressed', 'true');
+
+        var started = player.play();
+        if (started && started.catch) started.catch(clear);
+      });
+    });
+  })();
 
   var revealables = document.querySelectorAll('.rv');
   if ('IntersectionObserver' in window) {
