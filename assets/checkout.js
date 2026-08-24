@@ -89,20 +89,31 @@
      is flipped. Paddle itself is already initialised above. */
   if (!PADDLE.enabled) return;
 
-  /* Upgrade the "coming soon" placeholder into a live buy button.
-     Absent on pay.html, which is fine — Paddle.js opens the checkout there
-     by itself from the _ptxn parameter. */
+  /* Upgrade every "coming soon" placeholder into a live buy button.
+     There is more than one now — the hero and the Fold EQ card — so this
+     walks [data-buy="foldeq"] rather than a single id. Placeholders keep
+     their own classes (the hero button is larger), so only btn-soon is
+     swapped out. Absent on pay.html, which is fine: Paddle.js opens the
+     checkout there by itself from the _ptxn parameter. */
   function wireBuyButton() {
-    var slot = document.getElementById('buy-foldeq');
-    if (!slot) return;
+    var slots = document.querySelectorAll('[data-buy="foldeq"]');
+    if (!slots.length) return;
 
-    var btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'btn';
-    btn.id = 'buy-foldeq';
-    btn.innerHTML = 'Buy Fold EQ &mdash; $19.99 <span class="arw">&rarr;</span>';
-    btn.addEventListener('click', function () { window.RidgeSoundPaddle.open(); });
-    slot.parentNode.replaceChild(btn, slot);
+    Array.prototype.forEach.call(slots, function (slot) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = (slot.className || '')
+        .split(/\s+/)
+        .filter(function (c) { return c && c !== 'btn-soon'; })
+        .concat('btn')
+        .filter(function (c, i, a) { return a.indexOf(c) === i; })
+        .join(' ');
+      btn.setAttribute('data-buy', 'foldeq');
+      if (slot.id) btn.id = slot.id;
+      btn.innerHTML = 'Buy Fold EQ &mdash; $19.99 <span class="arw">&rarr;</span>';
+      btn.addEventListener('click', function () { window.RidgeSoundPaddle.open(); });
+      slot.parentNode.replaceChild(btn, slot);
+    });
 
     /* Drop the "checkout opens once we're verified" caveat once it's live. */
     var note = document.getElementById('buy-note');

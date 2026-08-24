@@ -63,58 +63,128 @@
 .acct-menu .sep{height:1px;margin:3px 8px;background:var(--line)}
 
 /* ============================ HERO ============================ */
+/* Product first: the render carries the mood on the left, the offer sits on
+   the right, both centred on one line. */
 .hero{
   position:relative;
   min-height:100vh;min-height:100svh;
   display:grid;
-  grid-template-columns:minmax(0,1fr) minmax(0,.44fr);
-  /* Centred, with a slight downward bias so the block sits in the lower
-     middle of the fold rather than jammed against the bottom edge. */
+  grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);
   align-items:center;
-  gap:40px;
-  padding:calc(var(--nav-h) + 40px) var(--gut) clamp(96px,14vh,150px);
+  gap:clamp(24px,4vw,60px);
+  padding:calc(var(--nav-h) + 32px) var(--gut) clamp(84px,12vh,132px);
   max-width:var(--maxw);margin:0 auto;
 }
+/* Full-bleed on purpose. Bounded to .hero this left a hard vertical seam at
+   the container edge on wide monitors. */
 .hero::before{
-  content:'';position:absolute;inset:0;pointer-events:none;
+  content:'';position:absolute;top:0;bottom:0;pointer-events:none;
+  left:50%;width:100vw;transform:translateX(-50%);
   background:
-    linear-gradient(78deg, rgba(5,7,11,.80) 0%, rgba(5,7,11,.44) 42%, rgba(5,7,11,0) 74%),
-    linear-gradient(180deg, rgba(5,7,11,.5) 0%, rgba(5,7,11,0) 24%, rgba(5,7,11,0) 58%, var(--bg-0) 100%);
+    linear-gradient(282deg, rgba(5,7,11,.82) 0%, rgba(5,7,11,.46) 40%, rgba(5,7,11,0) 76%),
+    linear-gradient(180deg, rgba(5,7,11,.55) 0%, rgba(5,7,11,0) 26%, rgba(5,7,11,0) 58%, var(--bg-0) 100%);
 }
 .hero > *{position:relative}
 
-h1.headline{
+/* ---- the render ---- */
+.hero-stage{
+  position:relative;
+  border:1px solid var(--line-mid);
+  border-radius:3px;
+  overflow:hidden;
+  background:var(--bg-0);
+  box-shadow:
+    0 26px 80px -26px rgba(0,0,0,.95),
+    0 0 64px -14px rgba(63,169,245,.24);
+  opacity:0;animation:fade 1.4s var(--ease) .15s forwards;
+}
+/* Inner hairline so the edge reads as glass rather than a cut. */
+.hero-stage::before{
+  content:'';position:absolute;inset:0;z-index:2;pointer-events:none;
+  border:1px solid rgba(127,227,255,.08);border-radius:2px;
+}
+.hero-stage::after{
+  content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(58% 58% at 50% 50%, rgba(127,227,255,.05), transparent 72%);
+}
+/* The clip pulls a long way back mid-loop, so crop in and keep the product
+   the biggest thing on the screen. */
+.hero-vid{display:block;width:100%;height:auto;transform:scale(1.16)}
+
+/* ---- the offer ---- */
+.hero-copy{opacity:0;transform:translateY(16px);animation:rise 1s var(--ease) .42s forwards}
+
+.eyebrow{
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  margin:0 0 22px;
+  font-family:var(--mono);font-size:var(--t-label);
+  letter-spacing:.17em;text-transform:uppercase;color:var(--txt-faint);
+}
+.eyebrow .out{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:5px 11px;border:1px solid var(--line-hot);border-radius:2px;
+  color:var(--ice);letter-spacing:.17em;
+}
+.eyebrow .out::before{
+  content:'';width:5px;height:5px;border-radius:50%;background:var(--ice);
+  animation:pulse 2.6s var(--ease) infinite;
+}
+@keyframes pulse{
+  0%{box-shadow:0 0 0 0 rgba(127,227,255,.5)}
+  70%,100%{box-shadow:0 0 0 7px rgba(127,227,255,0)}
+}
+
+h1.hero-name{
   margin:0;
   font-family:var(--display);
-  font-size:var(--t-display);
-  font-weight:300;
-  line-height:.97;
-  letter-spacing:-.006em;
+  font-size:clamp(3rem, 6.4vw, 5.25rem);
+  font-weight:300;line-height:.94;letter-spacing:-.008em;
   color:var(--txt-hi);
 }
-h1.headline .w{
-  display:block;white-space:nowrap;
-  opacity:0;transform:translateY(20px);
-  animation:rise 1.05s var(--ease) forwards;
+.hero-claim{
+  margin:14px 0 0;
+  font-family:var(--display);font-style:italic;font-weight:300;
+  font-size:clamp(1.3rem,2.1vw,1.65rem);line-height:1.35;
+  color:#a9c6de;
 }
-h1.headline em{font-style:italic;font-weight:300;color:#a9c6de}
-@keyframes rise{to{opacity:1;transform:none}}
-@keyframes fade{to{opacity:1}}
+.hero-what{
+  margin:22px 0 0;max-width:42ch;
+  font-size:var(--t-body);line-height:1.75;color:var(--txt-dim);
+}
+.hero-what b{color:var(--txt);font-weight:500}
 
-.hero-side{
-  padding-bottom:10px;
-  opacity:0;transform:translateY(14px);
-  animation:rise .95s var(--ease) .74s forwards;
+.hero-buy{
+  display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;
+  margin:30px 0 0;padding-top:26px;border-top:1px solid var(--line);
 }
-.hero-side p{margin:0 0 30px;font-size:var(--t-body);line-height:1.75;color:var(--txt-dim);max-width:34ch}
-.hero-side p b{color:var(--txt);font-weight:500}
+.hero-buy .fig{
+  margin:0;font-family:var(--display);font-weight:300;
+  font-size:clamp(2.1rem,3.4vw,2.85rem);line-height:1;color:var(--txt-hi);
+  /* Cormorant defaults to old-style figures: at this size the 1 reads as a
+     capital I. Force lining. */
+  font-variant-numeric:lining-nums tabular-nums;
+  font-feature-settings:'lnum' 1,'tnum' 1;
+}
+.hero-buy .fig sup{font-size:1.05rem;font-weight:400;top:-1.15em;margin-right:2px;color:var(--txt-dim)}
+.hero-buy .terms{
+  margin:0;font-family:var(--mono);font-size:var(--t-label);
+  letter-spacing:.05em;line-height:1.85;color:var(--txt-faint);
+}
+
+.hero-acts{display:flex;gap:12px;flex-wrap:wrap;margin:24px 0 0}
+.hero-acts .btn{padding:16px 30px}
+
+.hero-fine{
+  margin:22px 0 0;
+  font-size:var(--t-small);line-height:1.7;color:var(--txt-faint);
+}
 
 .scroll-hint{
   position:absolute;left:var(--gut);bottom:26px;
   display:flex;align-items:center;gap:12px;
   font-family:var(--mono);font-size:var(--t-label);letter-spacing:.16em;text-transform:uppercase;
   color:var(--txt-faint);
-  opacity:0;animation:fade .9s var(--ease) 1.4s forwards;
+  opacity:0;animation:fade .9s var(--ease) 1.5s forwards;
 }
 .scroll-hint .rail{position:relative;width:64px;height:1px;background:var(--line);overflow:hidden}
 .scroll-hint .rail::after{
@@ -122,6 +192,8 @@ h1.headline em{font-style:italic;font-weight:300;color:#a9c6de}
   animation:railrun 2.6s ease-in-out infinite;
 }
 @keyframes railrun{0%{left:-24px}70%,100%{left:64px}}
+@keyframes rise{to{opacity:1;transform:none}}
+@keyframes fade{to{opacity:1}}
 
 /* ============================ CATALOGUE ============================ */
 .catalogue{
@@ -196,7 +268,9 @@ h1.headline em{font-style:italic;font-weight:300;color:#a9c6de}
 }
 .buy .fig{
   margin:0;font-family:var(--display);font-size:3rem;font-weight:300;line-height:1;
-  color:var(--txt-hi);font-variant-numeric:tabular-nums;
+  color:var(--txt-hi);
+  font-variant-numeric:lining-nums tabular-nums;
+  font-feature-settings:'lnum' 1,'tnum' 1;
 }
 .buy .fig sup{font-size:1.1rem;font-weight:400;top:-1.1em;margin-right:2px;color:var(--txt-dim)}
 .buy .terms{
@@ -263,8 +337,9 @@ h1.headline em{font-style:italic;font-weight:300;color:#a9c6de}
 .rv.d1{transition-delay:.09s}
 
 @media (max-width:1080px){
-  .hero{grid-template-columns:1fr;align-items:start;align-content:center;gap:44px}
-  .hero-side{padding-bottom:0}
+  .hero{grid-template-columns:1fr;align-content:center;gap:clamp(26px,5vw,40px);
+        padding-top:calc(var(--nav-h) + 20px)}
+  .hero-what{max-width:52ch}
   .lead{grid-template-columns:1fr;gap:34px}
 }
 @media (max-width:760px){
@@ -277,6 +352,9 @@ h1.headline em{font-style:italic;font-weight:300;color:#a9c6de}
   .buy{flex-direction:column;align-items:flex-start;gap:20px}
   .buy .acts{margin-left:0;width:100%}
   .buy .acts .btn,.buy .acts .btn-soon{flex:1 1 auto;justify-content:center}
+  .hero-acts{width:100%}
+  .hero-acts .btn{flex:1 1 auto;justify-content:center}
+  .hero-buy{gap:12px}
   .scroll-hint{display:none}
   .spec{grid-template-columns:1fr;gap:3px 0}
   .spec dt{margin-top:13px}
@@ -285,7 +363,8 @@ h1.headline em{font-style:italic;font-weight:300;color:#a9c6de}
 /* Ambient and entrance motion only. State changes keep their feedback. */
 @media (prefers-reduced-motion:reduce){
   .rv{opacity:1;transform:none;transition:none}
-  h1.headline .w,.hero-side,.scroll-hint{opacity:1;transform:none;animation:none}
+  .hero-stage,.hero-copy,.scroll-hint{opacity:1;transform:none;animation:none}
+  .eyebrow .out::before{animation:none}
   .scroll-hint .rail::after{animation:none;left:0;opacity:.5}
   .minor .frame{opacity:1}
 }
@@ -336,18 +415,38 @@ h1.headline em{font-style:italic;font-weight:300;color:#a9c6de}
 
   <main>
   <section class="hero" id="hero">
-    <div class="hero-lede">
-      <h1 class="headline" id="headline"></h1>
+    <div class="hero-stage">
+      <video class="hero-vid" autoplay loop muted playsinline preload="auto"
+             poster="assets/foldeq-hero.jpg" aria-label="Fold EQ turning in the dark">
+        <source src="assets/foldeq-hero.webm" type="video/webm">
+        <source src="assets/foldeq-hero.mp4" type="video/mp4">
+      </video>
     </div>
 
-    <div class="hero-side">
-      <p>Audio tools that should not exist. We built them anyway, then spent
-      a long time making sure they sound like nothing else.</p>
-      <p><b>VST3.</b> Windows and macOS. Install on every machine you own.</p>
-      <a class="btn" href="#plugins">Blow Your Mind <span class="arw">&rarr;</span></a>
+    <div class="hero-copy">
+      <p class="eyebrow"><span class="out">Out now</span> <span>Our flagship plugin</span></p>
+
+      <h1 class="hero-name">Fold EQ</h1>
+      <p class="hero-claim">The world&rsquo;s least possible EQ.</p>
+
+      <p class="hero-what">Twenty bands, each with an axis no other EQ has. A normal EQ decides
+      how loud a frequency is. This one also decides <b>when it arrives</b>.</p>
+
+      <div class="hero-buy">
+        <p class="fig"><sup>$</sup>19.99</p>
+        <p class="terms">One time, yours forever.<br>14-day refund, no questions.</p>
+      </div>
+
+      <div class="hero-acts">
+        <span class="btn btn-soon" data-buy="foldeq" aria-disabled="true">Buy: coming soon</span>
+        <a class="btn btn-ghost" href="downloads.html">Try it free <span class="arw">&rarr;</span></a>
+      </div>
+
+      <p class="hero-fine">VST3 &middot; Windows and macOS &middot; runs free in demo mode for as
+      long as you like</p>
     </div>
 
-    <div class="scroll-hint"><span>Scroll</span><span class="rail"></span></div>
+    <div class="scroll-hint"><span>More below</span><span class="rail"></span></div>
   </section>
 
   <section class="catalogue" id="plugins">
@@ -391,7 +490,7 @@ h1.headline em{font-style:italic;font-weight:300;color:#a9c6de}
             <p class="terms">One time. 14-day refund.</p>
           </div>
           <div class="acts">
-            <span class="btn btn-soon" aria-disabled="true" id="buy-foldeq">Buy: coming soon</span>
+            <span class="btn btn-soon" aria-disabled="true" id="buy-foldeq" data-buy="foldeq">Buy: coming soon</span>
             <a class="btn btn-ghost" href="downloads.html">Download the demo <span class="arw">&rarr;</span></a>
           </div>
         </div>
@@ -497,16 +596,6 @@ h1.headline em{font-style:italic;font-weight:300;color:#a9c6de}
 <script>
 (function () {
   'use strict';
-
-  /* headline, set line by line so the serif can breathe */
-  (function () {
-    var el = document.getElementById('headline');
-    if (!el) return;
-    var lines = ["The World's", "Least Possible", "<em>Plugins</em>"];
-    el.innerHTML = lines.map(function (w, i) {
-      return '<span class="w" style="animation-delay:' + (0.34 + i * 0.13).toFixed(2) + 's">' + w + '</span>';
-    }).join('');
-  })();
 
   document.getElementById('yr').textContent = new Date().getFullYear();
 
@@ -667,8 +756,8 @@ h1.headline em{font-style:italic;font-weight:300;color:#a9c6de}
 
     '  col *= 1.30;',
 
-    /* hold the left third back so the headline sits on quiet ground */
-    '  col *= mix(0.30, 1.0, smoothstep(0.04, 0.66, uv.x));',
+    /* hold the right third back so the offer copy sits on quiet ground */
+    '  col *= mix(0.30, 1.0, smoothstep(0.96, 0.38, uv.x));',
     '  float vig = 1.0 - 0.50 * pow(length((uv - 0.5) * vec2(1.04, 1.0)) * 1.30, 2.0);',
     '  col *= clamp(vig, 0.0, 1.0);',
     '  col *= smoothstep(0.0, 0.14, uv.y) * smoothstep(1.02, 0.74, uv.y);',
