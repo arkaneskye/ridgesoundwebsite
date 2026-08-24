@@ -31,7 +31,7 @@
          2. the live token above is filled in
        Checkout on an unapproved domain fails with "Something went wrong",
        so until then the button stays "Buy: coming soon". */
-    enabled: false
+    enabled: true
   };
 
   window.RidgeSoundPaddle = PADDLE;
