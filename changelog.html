@@ -21,6 +21,10 @@
 .rel-tag{padding:4px 9px;border:1px solid var(--line-hot);border-radius:2px;
   color:var(--ice);text-transform:uppercase;letter-spacing:.14em}
 .rel-tag--old{border-color:var(--line);color:var(--txt-faint)}
+.rel-notes{margin:14px 0 0;padding-left:20px}
+.rel-notes li{margin-bottom:9px;line-height:1.75;color:var(--txt-dim)}
+.rel-notes li:last-child{margin-bottom:0}
+.rel-notes strong{color:var(--txt)}
 .rel-dl{list-style:none;margin:20px 0 0;padding:0;display:flex;gap:10px;flex-wrap:wrap}
 .rel-dl a{display:inline-flex;align-items:center;gap:10px;
   padding:11px 18px;border:1px solid var(--line);border-radius:2px;
@@ -59,8 +63,31 @@
 
   <article class="rel">
     <div class="rel-head">
-      <h2>Version 1.0</h2>
+      <h2>Version 1.1</h2>
       <p class="rel-meta"><span class="rel-tag">Current</span>
+      <time datetime="2026-08-27">27 August 2026</time></p>
+    </div>
+    <ul class="rel-notes">
+      <li>Offline renders now sound the same as real-time playback. Filter movement and modulation
+      used to step in fast bounces, especially on moving high and low cuts. Fixed.</li>
+      <li>New <strong>Audio Unit</strong> version on macOS, so Fold EQ now runs in Logic Pro and
+      GarageBand.</li>
+      <li>New option in the gear menu, <strong>GPU-accelerated UI (OpenGL)</strong>. Off by default.
+      Turn it on if the interface feels laggy in your DAW, which has been reported in Ableton on
+      some Windows machines.</li>
+      <li>No changes to sound, presets, or parameters in normal playback. Your sessions and licences
+      work exactly as before.</li>
+    </ul>
+    <ul class="rel-dl">
+      <li><a href="downloads/FoldEQ-Setup-v1.1-Windows.exe" download>Windows installer <span class="sz">6.9 MB</span></a></li>
+      <li><a href="downloads/FoldEQ-v1.1-macOS.pkg" download>macOS installer <span class="sz">9.2 MB</span></a></li>
+    </ul>
+  </article>
+
+  <article class="rel">
+    <div class="rel-head">
+      <h2>Version 1.0</h2>
+      <p class="rel-meta"><span class="rel-tag rel-tag--old">Older</span>
       <time datetime="2026-08-23">23 August 2026</time></p>
     </div>
     <p>Our flagship VST3 plugin is out, jam packed with unique sound design features and a
