@@ -208,15 +208,121 @@ h1.hero-name{
 @keyframes fade{to{opacity:1}}
 
 
+
+/* ============================ MODAL ============================ */
+/* One dialog, two jobs: the free trial gate and the licence portal
+   lookup. Both are "give us an email, we send you a link". */
+.modal{
+  position:fixed;inset:0;z-index:200;
+  display:grid;place-items:center;
+  padding:var(--gut);
+  background:rgba(3,5,8,.78);
+  -webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);
+  opacity:0;visibility:hidden;
+  transition:opacity .32s var(--ease),visibility .32s var(--ease);
+}
+.modal.open{opacity:1;visibility:visible}
+/* display:grid above would otherwise beat the [hidden] attribute */
+.modal[hidden]{display:none}
+
+.modal-card{
+  position:relative;
+  width:min(100%,452px);
+  background:var(--bg-1);
+  border:1px solid var(--line-mid);border-radius:4px;
+  box-shadow:0 40px 110px -30px rgba(0,0,0,.95), 0 0 70px -20px rgba(63,169,245,.2);
+  padding:clamp(28px,4vw,38px) clamp(24px,3.4vw,34px) clamp(24px,3vw,30px);
+  transform:translateY(14px) scale(.985);
+  transition:transform .32s var(--ease);
+}
+.modal.open .modal-card{transform:none}
+
+.modal-x{
+  position:absolute;top:12px;right:12px;
+  width:34px;height:34px;display:grid;place-items:center;
+  border:1px solid transparent;border-radius:2px;
+  color:var(--txt-faint);background:none;cursor:pointer;
+}
+.modal-x:hover{color:var(--txt-hi);border-color:var(--line)}
+.modal-x svg{width:15px;height:15px}
+
+.modal-eyebrow{
+  margin:0 0 10px;font-family:var(--mono);font-size:var(--t-label);
+  letter-spacing:.16em;text-transform:uppercase;color:var(--txt-faint);
+}
+.modal-card h2{
+  margin:0;font-family:var(--display);font-weight:300;
+  font-size:clamp(1.6rem,3.2vw,2.05rem);line-height:1.1;color:var(--txt-hi);
+}
+.modal-card p.say{margin:12px 0 0;font-size:var(--t-small);line-height:1.7;color:var(--txt-dim)}
+
+/* The two steps are stacked in a clipping frame that animates its own
+   height, so the card grows into the second step rather than jumping. */
+.steps{position:relative;overflow:hidden;transition:height .38s var(--ease);margin-top:22px}
+.step{
+  position:absolute;top:0;left:0;width:100%;
+  opacity:0;transform:translateX(22px);pointer-events:none;
+  transition:opacity .3s var(--ease),transform .34s var(--ease);
+}
+.step.on{opacity:1;transform:none;pointer-events:auto;position:relative}
+.step.gone{transform:translateX(-22px)}
+
+.field label{
+  display:block;margin-bottom:9px;
+  font-family:var(--mono);font-size:var(--t-label);letter-spacing:.1em;
+  text-transform:uppercase;color:var(--txt-faint);
+}
+.field input[type=email]{
+  width:100%;padding:14px 15px;
+  background:var(--bg-0);color:var(--txt-hi);
+  border:1px solid var(--line);border-radius:2px;
+  font-family:var(--text);font-size:var(--t-body);
+}
+.field input[type=email]:focus{outline:none;border-color:var(--line-hot)}
+.field input[type=email]::placeholder{color:var(--txt-faint)}
+
+.optin{display:flex;gap:12px;align-items:flex-start;cursor:pointer}
+.optin input{
+  flex:0 0 auto;width:18px;height:18px;margin:2px 0 0;
+  accent-color:var(--cyan);cursor:pointer;
+}
+.optin span{font-size:var(--t-small);line-height:1.6;color:var(--txt-dim)}
+
+.modal-err{
+  margin:12px 0 0;min-height:1.2em;
+  font-family:var(--mono);font-size:var(--t-label);letter-spacing:.04em;color:var(--warm);
+}
+.modal-go{
+  display:block;width:100%;margin-top:22px;
+  justify-content:center;cursor:pointer;
+}
+.modal-go[disabled]{opacity:.55;cursor:default}
+.modal-fine{
+  margin:14px 0 0;text-align:center;
+  font-size:var(--t-label);line-height:1.6;color:var(--txt-faint);
+}
+.modal-fine a{color:var(--txt-dim);border-bottom:1px solid var(--line)}
+.modal-fine a:hover{color:var(--txt-hi)}
+
+.modal-done{text-align:center;padding:6px 0 4px}
+.modal-done .tick{
+  width:44px;height:44px;margin:0 auto 16px;
+  display:grid;place-items:center;border-radius:50%;
+  border:1px solid var(--line-hot);color:var(--ice);
+}
+.modal-done .tick svg{width:18px;height:18px}
+
+@media (prefers-reduced-motion:reduce){
+  .modal,.modal-card,.steps,.step{transition:none}
+}
+
 /* ============================ DEMOS ============================ */
 /* Raised panel. Its top edge and heading sit above the fold on purpose,
    so the page reads as "there is more here" without a scroll gimmick. */
 .demos{
   position:relative;
   background:var(--bg-1);
-  border-top:1px solid var(--line);
-  border-radius:20px 20px 0 0;
-  padding:clamp(52px,7vw,86px) var(--gut) clamp(56px,8vw,96px);
+  padding:clamp(46px,6vw,74px) var(--gut) clamp(56px,8vw,96px);
 }
 .demos-in,.feat-in,.cta-in{max-width:var(--maxw);margin:0 auto}
 .demos h2,.feat h2{
@@ -289,7 +395,15 @@ h1.hero-name{
 .clip-bar i{display:block;height:100%;width:0;background:var(--ice)}
 
 /* ============================ FEATURES ============================ */
-.feat{padding:clamp(58px,8vw,104px) var(--gut);background:var(--bg-1)}
+/* First section after the hero, so it carries the raised edge that breaks
+   the fold. Everything below it is the same ground and reads as one panel. */
+.feat{
+  position:relative;
+  background:var(--bg-1);
+  border-top:1px solid var(--line);
+  border-radius:20px 20px 0 0;
+  padding:clamp(38px,4.4vw,56px) var(--gut) clamp(52px,7vw,90px);
+}
 .feat .motto{
   margin:0 0 12px;
   font-family:var(--display);font-style:italic;font-weight:300;
@@ -623,19 +737,18 @@ h1.hero-name{
     </button>
     <nav class="links" id="navlinks" aria-label="Primary">
       <a href="#plugins">Plugins</a>
-      <a href="downloads.html">Downloads</a>
       <a href="#docs">Documentation</a>
       <a href="contact.html">Contact</a>
     </nav>
     <div class="account">
-      <a class="acct-btn" href="https://license.ridgesound.com"
+      <button class="acct-btn" type="button" data-open="portalModal"
          title="Already bought Fold EQ? Get your license and the installers.">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <circle cx="8" cy="15.5" r="4.2"/><path d="M11 12.5 20.5 3M17.5 6l2.6 2.6M14.6 8.9l2.6 2.6"/>
         </svg>
         <span class="lbl">License Portal</span>
-      </a>
+      </button>
     </div>
   </header>
 
@@ -665,7 +778,7 @@ h1.hero-name{
 
       <div class="hero-acts">
         <span class="btn btn-soon" data-buy="foldeq" aria-disabled="true">Buy: coming soon</span>
-        <a class="btn btn-ghost" href="downloads.html">Try it free <span class="arw">&rarr;</span></a>
+        <button class="btn btn-ghost" type="button" data-open="trialModal">Try it free <span class="arw">&rarr;</span></button>
       </div>
 
       <p class="hero-fine">VST3 &middot; Windows and macOS &middot; runs free in demo mode for as
@@ -673,6 +786,43 @@ h1.hero-name{
     </div>
 
     <div class="scroll-hint"><span>More below</span><span class="rail"></span></div>
+  </section>
+
+  <section class="feat" id="features">
+    <div class="feat-in">
+      <p class="motto">A classic meme turned into a sound design machine.</p>
+      <h2 class="rv">What it actually does</h2>
+
+      <div class="feat-grid">
+        <article class="feat-card rv">
+          <div class="feat-shot"><img src="assets/feat-bands.webp" alt="Fold EQ spectrum with folded bands and a hand-drawn curve" loading="lazy" width="1400" height="703"></div>
+          <div class="feat-ic"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M1 18c3.5 0 3.5-9 7-9s3.5 9 7 9 3.5-9 7-9 3.5 4.5 5 4.5"/></svg></div>
+          <h3>Radical Band Control</h3>
+          <p>Fold bands left and right, over each other, to enjoy a plethora of multi-band sound
+          design miracles only possible now!</p>
+        </article>
+
+        <article class="feat-card rv d1">
+          <div class="feat-shot"><img src="assets/feat-options.webp" alt="Band type list, fold mode list and the serial chain editor" loading="lazy" width="1200" height="800"></div>
+          <div class="feat-ic"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M14 2c0 6.6 5.4 12 12 12-6.6 0-12 5.4-12 12 0-6.6-5.4-12-12-12 6.6 0 12-5.4 12-12z"/></svg></div>
+          <h3>Endless Options</h3>
+          <p>Choose between 4 different &lsquo;Fold&rsquo; modes on 11 different band types including
+          Ripple, Brownian, and Runaway Resonator. Each Fold mode has a different left&ndash;right
+          function: Time is prelay&ndash;delay, freq shift is negative&ndash;positive, FFT is phase
+          lock&ndash;spectral gate, and Transient is cut&ndash;boost. Also included is a serial
+          signal flow node dragger when in serial mode.</p>
+        </article>
+
+        <article class="feat-card rv d1">
+          <div class="feat-shot"><img src="assets/feat-mod.webp" alt="Macro knobs, LFO and envelope follower tabs" loading="lazy" width="1400" height="240"></div>
+          <div class="feat-ic"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M1 14c0-6 2.9-9 6.5-9S14 8 14 14s2.9 9 6.5 9S27 20 27 14"/></svg></div>
+          <h3>Maximum Modulation</h3>
+          <p>Nearly everything can be modulated with 5 customizable LFOs, 4 mappable macros, and 3
+          envelope followers to make your sounds flow into uncharted territory. Go even further with
+          our Mod Matrix section that allows any combination of modulators as well as Aux Mods.</p>
+        </article>
+      </div>
+    </div>
   </section>
 
   <section class="demos" id="demos">
@@ -797,43 +947,6 @@ h1.hero-name{
     </div>
   </section>
 
-  <section class="feat" id="features">
-    <div class="feat-in">
-      <p class="motto rv">A classic meme turned into a sound design machine.</p>
-      <h2 class="rv">What it actually does</h2>
-
-      <div class="feat-grid">
-        <article class="feat-card rv">
-          <div class="feat-shot"><img src="assets/feat-bands.webp" alt="Fold EQ spectrum with folded bands and a hand-drawn curve" loading="lazy" width="1400" height="703"></div>
-          <div class="feat-ic"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M1 18c3.5 0 3.5-9 7-9s3.5 9 7 9 3.5-9 7-9 3.5 4.5 5 4.5"/></svg></div>
-          <h3>Radical Band Control</h3>
-          <p>Fold bands left and right, over each other, to enjoy a plethora of multi-band sound
-          design miracles only possible now!</p>
-        </article>
-
-        <article class="feat-card rv d1">
-          <div class="feat-shot"><img src="assets/feat-options.webp" alt="Band type list, fold mode list and the serial chain editor" loading="lazy" width="1200" height="800"></div>
-          <div class="feat-ic"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M14 2c0 6.6 5.4 12 12 12-6.6 0-12 5.4-12 12 0-6.6-5.4-12-12-12 6.6 0 12-5.4 12-12z"/></svg></div>
-          <h3>Endless Options</h3>
-          <p>Choose between 4 different &lsquo;Fold&rsquo; modes on 11 different band types including
-          Ripple, Brownian, and Runaway Resonator. Each Fold mode has a different left&ndash;right
-          function: Time is prelay&ndash;delay, freq shift is negative&ndash;positive, FFT is phase
-          lock&ndash;spectral gate, and Transient is cut&ndash;boost. Also included is a serial
-          signal flow node dragger when in serial mode.</p>
-        </article>
-
-        <article class="feat-card rv d1">
-          <div class="feat-shot"><img src="assets/feat-mod.webp" alt="Macro knobs, LFO and envelope follower tabs" loading="lazy" width="1400" height="240"></div>
-          <div class="feat-ic"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M1 14c0-6 2.9-9 6.5-9S14 8 14 14s2.9 9 6.5 9S27 20 27 14"/></svg></div>
-          <h3>Maximum Modulation</h3>
-          <p>Nearly everything can be modulated with 5 customizable LFOs, 4 mappable macros, and 3
-          envelope followers to make your sounds flow into uncharted territory. Go even further with
-          our Mod Matrix section that allows any combination of modulators as well as Aux Mods.</p>
-        </article>
-      </div>
-    </div>
-  </section>
-
   <section class="cta" id="get">
     <div class="cta-in">
       <div>
@@ -845,7 +958,7 @@ h1.hero-name{
         <p class="fig"><sup>$</sup>19.99</p>
         <div class="cta-acts">
           <span class="btn btn-soon" data-buy="foldeq" aria-disabled="true">Buy: coming soon</span>
-          <a class="btn btn-ghost" href="downloads.html">Try it free <span class="arw">&rarr;</span></a>
+          <button class="btn btn-ghost" type="button" data-open="trialModal">Try it free <span class="arw">&rarr;</span></button>
         </div>
       </div>
     </div>
@@ -896,6 +1009,91 @@ h1.hero-name{
   </section>
   </main>
 
+  <!-- Trial gate. Soft by design: downloads.html stays reachable, this is
+       how we ask rather than how we enforce. -->
+  <div class="modal" id="trialModal" role="dialog" aria-modal="true"
+       aria-labelledby="trialTitle" hidden>
+    <div class="modal-card">
+      <button class="modal-x" type="button" data-close aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg></button>
+
+      <p class="modal-eyebrow">Free demo</p>
+      <h2 id="trialTitle">Try Fold EQ</h2>
+      <p class="say">Full plugin, no time limit. The audio mutes for a moment every twenty-five
+      seconds until you licence it. We&rsquo;ll email you the download link.</p>
+
+      <div class="steps" id="trialSteps">
+        <div class="step on" data-step="1">
+          <div class="field">
+            <label for="trialEmail">Your email</label>
+            <input type="email" id="trialEmail" name="email" autocomplete="email"
+                   placeholder="you@example.com" required>
+          </div>
+          <p class="modal-err" id="trialErr" role="alert"></p>
+          <button class="btn modal-go" type="button" id="trialNext">Continue</button>
+        </div>
+
+        <div class="step" data-step="2">
+          <label class="optin">
+            <input type="checkbox" id="trialOptin">
+            <span>Email me occasionally about Ridge Sound updates and new plugins.
+            No more than once a month, unsubscribe any time.</span>
+          </label>
+          <p class="modal-err" id="trialErr2" role="alert"></p>
+          <button class="btn modal-go" type="button" id="trialSend">Send my free trial</button>
+          <p class="modal-fine">Either way you get the download. See our
+          <a href="privacy.html">privacy policy</a>.</p>
+        </div>
+
+        <div class="step" data-step="3">
+          <div class="modal-done">
+            <div class="tick"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5l4.5 4.5L17 5.5"/></svg></div>
+            <h2>Check your inbox</h2>
+            <p class="say" id="trialSent">The download link is on its way.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Licence portal lookup. Deliberately never says whether an email has
+       orders: it answers the same way either way. -->
+  <div class="modal" id="portalModal" role="dialog" aria-modal="true"
+       aria-labelledby="portalTitle" hidden>
+    <div class="modal-card">
+      <button class="modal-x" type="button" data-close aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg></button>
+
+      <p class="modal-eyebrow">Licence portal</p>
+      <h2 id="portalTitle">Get your licence</h2>
+      <p class="say">Enter the email you paid with. If there is an order on it we&rsquo;ll send
+      you a link straight to your licence and installers, with the order reference already
+      filled in.</p>
+
+      <div class="steps" id="portalSteps">
+        <div class="step on" data-step="1">
+          <div class="field">
+            <label for="portalEmail">Email used at checkout</label>
+            <input type="email" id="portalEmail" name="email" autocomplete="email"
+                   placeholder="you@example.com" required>
+          </div>
+          <p class="modal-err" id="portalErr" role="alert"></p>
+          <button class="btn modal-go" type="button" id="portalSend">Send my licence link</button>
+          <p class="modal-fine">Still have your receipt? You can go
+          <a href="https://license.ridgesound.com">straight to the portal</a> instead.</p>
+        </div>
+
+        <div class="step" data-step="2">
+          <div class="modal-done">
+            <div class="tick"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5l4.5 4.5L17 5.5"/></svg></div>
+            <h2>Check your inbox</h2>
+            <p class="say">If that email has an order with us, the link is on its way. It can take
+            a minute to arrive, and it is worth checking spam.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
   <footer class="foot">
     <div class="foot-in">
       <div>
@@ -914,6 +1112,7 @@ h1.hero-name{
         <ul>
           <li><a href="downloads.html">Downloads</a></li>
           <li><a href="downloads/FoldEQ-Manual-v1.0.pdf">Fold EQ manual (PDF)</a></li>
+          <li><a href="changelog.html">Changelog</a></li>
           <li><a href="downloads.html">Installing</a></li>
           <li><a href="contact.html">Licence and activation</a></li>
         </ul>
@@ -1022,6 +1221,182 @@ h1.hero-name{
         if (started && started.catch) started.catch(clear);
       });
     });
+  })();
+
+  /* ---- modals: trial gate and licence portal lookup ----
+     Both talk to the Worker, which owns the mail provider key. Nothing
+     sensitive lives in this file. */
+  (function () {
+    var API = 'https://license.ridgesound.com';
+    var EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    var lastFocus = null;
+
+    function steps(modal) { return modal.querySelector('.steps'); }
+
+    function sizeTo(modal, el) {
+      var box = steps(modal);
+      box.style.height = el.offsetHeight + 'px';
+    }
+
+    function focusIn(modal, delay) {
+      var on = modal.querySelector('.step.on');
+      if (!on) return;
+      var f = on.querySelector('input, button') || modal.querySelector('.modal-x');
+      if (f) setTimeout(function () { f.focus(); }, delay);
+    }
+
+    function show(modal, n) {
+      var all = modal.querySelectorAll('.step');
+      var target = null;
+      Array.prototype.forEach.call(all, function (st) {
+        var i = +st.getAttribute('data-step');
+        st.classList.toggle('on', i === n);
+        st.classList.toggle('gone', i < n);
+        if (i === n) target = st;
+      });
+      if (target) {
+        sizeTo(modal, target);
+        if (modal.classList.contains('open')) focusIn(modal, 140);
+      }
+    }
+
+    function open(modal) {
+      lastFocus = document.activeElement;
+      modal.hidden = false;
+      /* next frame, so the transition actually runs */
+      requestAnimationFrame(function () {
+        modal.classList.add('open');
+        show(modal, 1);
+        focusIn(modal, 360);          /* after the open transition, not during */
+      });
+      document.body.style.overflow = 'hidden';
+    }
+
+    function close(modal) {
+      modal.classList.remove('open');
+      document.body.style.overflow = '';
+      setTimeout(function () {
+        modal.hidden = true;
+        /* reset so a second visit starts clean */
+        modal.querySelectorAll('input[type=email]').forEach(function (i) { i.value = ''; });
+        modal.querySelectorAll('input[type=checkbox]').forEach(function (i) { i.checked = false; });
+        modal.querySelectorAll('.modal-err').forEach(function (e) { e.textContent = ''; });
+        modal.querySelectorAll('.modal-go').forEach(function (b) { b.disabled = false; });
+        show(modal, 1);
+      }, 340);
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+
+    function post(path, body) {
+      return fetch(API + path, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      }).then(function (r) {
+        return r.json().catch(function () { return {}; }).then(function (j) {
+          if (!r.ok) throw new Error(j.error || 'Something went wrong. Try again in a moment.');
+          return j;
+        });
+      });
+    }
+
+    Array.prototype.forEach.call(document.querySelectorAll('[data-open]'), function (btn) {
+      btn.addEventListener('click', function () {
+        var m = document.getElementById(btn.getAttribute('data-open'));
+        if (m) open(m);
+      });
+    });
+
+    Array.prototype.forEach.call(document.querySelectorAll('.modal'), function (modal) {
+      modal.addEventListener('click', function (e) {
+        if (e.target === modal || e.target.closest('[data-close]')) close(modal);
+      });
+      /* keep tab inside the dialog */
+      modal.addEventListener('keydown', function (e) {
+        if (e.key !== 'Tab') return;
+        var f = modal.querySelectorAll('button:not([disabled]), input:not([disabled]), a[href]');
+        var vis = Array.prototype.filter.call(f, function (el) { return el.offsetParent !== null; });
+        if (!vis.length) return;
+        var first = vis[0], last = vis[vis.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      });
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape') return;
+      var open = document.querySelector('.modal.open');
+      if (open) close(open);
+    });
+
+    window.addEventListener('resize', function () {
+      Array.prototype.forEach.call(document.querySelectorAll('.modal.open'), function (m) {
+        var on = m.querySelector('.step.on');
+        if (on) sizeTo(m, on);
+      });
+    });
+
+    /* ---- trial ---- */
+    var tModal = document.getElementById('trialModal');
+    if (tModal) {
+      var tEmail = document.getElementById('trialEmail');
+      var tErr   = document.getElementById('trialErr');
+      var tNext  = document.getElementById('trialNext');
+      var tSend  = document.getElementById('trialSend');
+      var tErr2  = document.getElementById('trialErr2');
+      var tSent  = document.getElementById('trialSent');
+
+      function goStep2() {
+        var v = tEmail.value.trim();
+        if (!EMAIL.test(v)) { tErr.textContent = 'That does not look like an email address.'; tEmail.focus(); return; }
+        tErr.textContent = '';
+        show(tModal, 2);
+      }
+      tNext.addEventListener('click', goStep2);
+      tEmail.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); goStep2(); } });
+
+      tSend.addEventListener('click', function () {
+        tErr2.textContent = '';
+        tSend.disabled = true;
+        tSend.textContent = 'Sending…';
+        post('/api/trial', {
+          email: tEmail.value.trim(),
+          optin: document.getElementById('trialOptin').checked
+        }).then(function () {
+          tSent.textContent = 'The download link is on its way to ' + tEmail.value.trim() + '.';
+          show(tModal, 3);
+        }).catch(function (err) {
+          tErr2.textContent = err.message;
+          tSend.disabled = false;
+          tSend.textContent = 'Send my free trial';
+        });
+      });
+    }
+
+    /* ---- portal ---- */
+    var pModal = document.getElementById('portalModal');
+    if (pModal) {
+      var pEmail = document.getElementById('portalEmail');
+      var pErr   = document.getElementById('portalErr');
+      var pSend  = document.getElementById('portalSend');
+
+      function sendPortal() {
+        var v = pEmail.value.trim();
+        if (!EMAIL.test(v)) { pErr.textContent = 'That does not look like an email address.'; pEmail.focus(); return; }
+        pErr.textContent = '';
+        pSend.disabled = true;
+        pSend.textContent = 'Sending…';
+        post('/api/portal-link', { email: v })
+          .then(function () { show(pModal, 2); })
+          .catch(function (err) {
+            pErr.textContent = err.message;
+            pSend.disabled = false;
+            pSend.textContent = 'Send my licence link';
+          });
+      }
+      pSend.addEventListener('click', sendPortal);
+      pEmail.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); sendPortal(); } });
+    }
   })();
 
   var revealables = document.querySelectorAll('.rv');
