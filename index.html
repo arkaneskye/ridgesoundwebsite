@@ -1309,6 +1309,27 @@ h1.hero-name{
       });
     });
 
+    /* Deep links. ridgesound.com/#try opens the trial gate, /#portal the licence
+       lookup, so a link in a post or a video description lands straight on the
+       ask. ?try and ?portal work too, for anywhere that eats fragments.
+       These modals only exist on this page, so the links only work here. */
+    var deepLinks = { try: 'trialModal', portal: 'portalModal' };
+
+    function openFromUrl() {
+      var key = (location.hash || '').replace('#', '').toLowerCase();
+      if (!deepLinks[key] && location.search) {
+        try {
+          var q = new URLSearchParams(location.search);
+          key = Object.keys(deepLinks).filter(function (k) { return q.has(k); })[0] || '';
+        } catch (e) { key = ''; }
+      }
+      var m = deepLinks[key] && document.getElementById(deepLinks[key]);
+      if (m && m.hidden) open(m);
+    }
+
+    openFromUrl();
+    window.addEventListener('hashchange', openFromUrl);
+
     Array.prototype.forEach.call(document.querySelectorAll('.modal'), function (modal) {
       modal.addEventListener('click', function (e) {
         if (e.target === modal || e.target.closest('[data-close]')) close(modal);
