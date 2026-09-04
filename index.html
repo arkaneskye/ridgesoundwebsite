@@ -711,6 +711,23 @@ h1.hero-name{
   ]
 }
 </script>
+
+<!-- Meta Pixel -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '2090686235657149');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none" alt=""
+src="https://www.facebook.com/tr?id=2090686235657149&amp;ev=PageView&amp;noscript=1" /></noscript>
+<!-- End Meta Pixel -->
 </head>
 
 <body id="top">
@@ -1386,6 +1403,9 @@ h1.hero-name{
           email: tEmail.value.trim(),
           optin: document.getElementById('trialOptin').checked
         }).then(function () {
+          /* Only on success, so a failed send is not counted as a lead.
+             Guarded: fbq is absent wherever the pixel is blocked. */
+          try { if (window.fbq) window.fbq('track', 'Lead', { content_name: 'Fold EQ trial' }); } catch (e) {}
           tSent.textContent = 'The download link is on its way to ' + tEmail.value.trim() + '.';
           show(tModal, 3);
         }).catch(function (err) {

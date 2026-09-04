@@ -15,6 +15,15 @@
 (function () {
   'use strict';
 
+  /* Meta Pixel, guarded. fbq is absent whenever the pixel is blocked by an
+     ad blocker, a tracking-protection browser, or a network that filters
+     connect.facebook.net — which is a large slice of a producer audience.
+     Nothing in the checkout path may depend on it, so every call goes
+     through here and a missing fbq is a no-op, never a thrown error. */
+  function track(event, params) {
+    try { if (window.fbq) window.fbq('track', event, params); } catch (e) {}
+  }
+
   var PADDLE = {
     /* Paddle > Developer tools > Authentication > Client-side tokens.
        Public by design — safe in page source. Live tokens start "live_". */
@@ -54,6 +63,15 @@
 
       if (ev.name === 'checkout.completed') {
         var txn = ev.data && ev.data.transaction_id;
+        /* Fire before the redirect: navigation can cancel an in-flight
+           pixel request, and this is the event the ad account optimises on. */
+        track('Purchase', {
+          value: 19.99,
+          currency: 'USD',
+          content_name: 'Fold EQ',
+          content_type: 'product',
+          content_ids: ['foldeq']
+        });
         var url;
         try {
           url = new URL(PADDLE.portal);
@@ -79,6 +97,12 @@
   PADDLE.ready = true;
 
   window.RidgeSoundPaddle.open = function () {
+    track('InitiateCheckout', {
+      value: 19.99,
+      currency: 'USD',
+      content_name: 'Fold EQ',
+      content_ids: ['foldeq']
+    });
     Paddle.Checkout.open({
       items: [{ priceId: PADDLE.priceId, quantity: 1 }],
       settings: { variant: 'one-page', theme: 'dark' }
