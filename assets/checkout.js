@@ -24,6 +24,18 @@
     try { if (window.fbq) window.fbq('track', event, params); } catch (e) {}
   }
 
+  /* FirstPromoter's tracking id, per their Paddle Billing instructions.
+     window.FPROM is created by cdn.firstpromoter.com/fpr.js, so this is
+     undefined for anyone whose browser blocks that domain. Those sales are
+     covered instead by per-affiliate coupon codes, which live in Paddle's
+     database and cannot be blocked. A first-party proxy is the other
+     supported fix and is worth adding later. */
+  function getFPTid() {
+    try {
+      return (window.FPROM && window.FPROM.data && window.FPROM.data.tid) || null;
+    } catch (e) { return null; }
+  }
+
   var PADDLE = {
     /* Paddle > Developer tools > Authentication > Client-side tokens.
        Public by design — safe in page source. Live tokens start "live_". */
@@ -63,6 +75,16 @@
 
       if (ev.name === 'checkout.completed') {
         var txn = ev.data && ev.data.transaction_id;
+
+        /* FirstPromoter's second documented route. Additive, and a no-op
+           when fpr.js never loaded. Merged into this handler rather than
+           replacing it: the licence redirect below lives here too. */
+        try {
+          var cust = ev.data && ev.data.customer;
+          if (window.fpr && cust && (cust.email || cust.id)) {
+            window.fpr('referral', { email: cust.email, uid: cust.id });
+          }
+        } catch (e) {}
         /* Fire before the redirect: navigation can cancel an in-flight
            pixel request, and this is the event the ad account optimises on. */
         track('Purchase', {
@@ -103,10 +125,19 @@
       content_name: 'Fold EQ',
       content_ids: ['foldeq']
     });
-    Paddle.Checkout.open({
+    var opts = {
       items: [{ priceId: PADDLE.priceId, quantity: 1 }],
       settings: { variant: 'one-page', theme: 'dark' }
-    });
+    };
+
+    /* Attached only when there is a referral to report. FirstPromoter's
+       example also passes the buyer's email, which we cannot: this is an
+       overlay checkout, so the address is typed inside Paddle after this
+       call. Paddle's webhook carries it to them regardless. */
+    var fpTid = getFPTid();
+    if (fpTid) opts.customData = { fp_tid: fpTid };
+
+    Paddle.Checkout.open(opts);
   };
 
   /* Everything below is the STORE BUTTON only, and stays off until the flag
